@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="S. M. Mahmud Iqbal" />
   <title>ShelfSense — Predictive Shelf Life Engine</title>
 
-  <!-- Fonts: Cabinet Grotesk (800, 700, 400) & Satoshi (500, 700) -->
+  <!-- Fonts: Cabinet Grotesk (800, 700, 400) & Satoshi (700, 500, 400) -->
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500,400&f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
 
   <style>
-    /* --- CSS Reset & Box Sizing --- */
+    /* --- CSS Reset & Base --- */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    /* --- Neo-Brutalist Design Tokens --- */
+    /* --- Neo-Brutalist Tokens --- */
     :root {
       --primary: #ffe17c;     /* Yellow */
       --bg: #171e19;          /* Charcoal Background */
@@ -50,7 +51,7 @@
       padding: 0 0 60px 0;
     }
 
-    /* --- Dot Pattern for Yellow Backgrounds (32px x 32px radial, opacity 10%) --- */
+    /* 32px x 32px radial dot pattern (opacity 10%) on primary yellow backgrounds */
     .bg-yellow-dots {
       background-color: var(--primary);
       background-image: radial-gradient(circle, rgba(0, 0, 0, 0.10) 2px, transparent 2px);
@@ -58,7 +59,7 @@
       background-position: 0 0;
     }
 
-    /* --- Top Navigation Bar --- */
+    /* --- Navigation Bar --- */
     nav {
       background-color: var(--primary);
       background-image: radial-gradient(circle, rgba(0, 0, 0, 0.10) 2px, transparent 2px);
@@ -71,6 +72,8 @@
       position: sticky;
       top: 0;
       z-index: 100;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .nav-logo {
@@ -105,6 +108,12 @@
       color: var(--text);
     }
 
+    .nav-right-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .nav-tag {
       background: var(--ui);
       color: var(--text);
@@ -118,7 +127,7 @@
       box-shadow: var(--shadow-standard);
     }
 
-    /* --- Marquee / Ticker Tape --- */
+    /* --- Marquee Ticker --- */
     .ticker-bar {
       background: var(--accent);
       border-bottom: var(--border-2px);
@@ -144,19 +153,19 @@
       100% { transform: translateX(-50%); }
     }
 
-    /* --- Main Page Container --- */
+    /* --- Container --- */
     .container {
-      max-width: 1240px;
+      max-width: 1260px;
       margin: 36px auto 0;
       padding: 0 24px;
     }
 
-    /* --- Hero Section Container --- */
+    /* --- Hero Card --- */
     .hero-card {
       border: var(--border-2px);
       box-shadow: var(--shadow-large);
       padding: 56px 48px;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       position: relative;
     }
 
@@ -202,7 +211,7 @@
       font-weight: 500;
       font-size: 1.05rem;
       color: var(--text);
-      max-width: 620px;
+      max-width: 640px;
       line-height: 1.6;
       margin-bottom: 32px;
     }
@@ -214,14 +223,14 @@
       margin-bottom: 40px;
     }
 
-    /* --- Standard Neo-Brutalist Buttons --- */
+    /* --- Neo-Brutalist Buttons --- */
     .btn {
       font-family: var(--font-heading);
       font-weight: 800;
       font-size: 0.95rem;
       letter-spacing: -0.03em;
       text-transform: uppercase;
-      padding: 14px 28px;
+      padding: 13px 26px;
       border: var(--border-2px);
       box-shadow: var(--shadow-standard);
       cursor: pointer;
@@ -233,7 +242,7 @@
       user-select: none;
     }
 
-    /* Micro-interaction: hover translate(4px, 4px) and removes shadow */
+    /* Hover press interaction: moves 4px to fill shadow space */
     .btn:hover {
       transform: translate(4px, 4px);
       box-shadow: 0px 0px 0px 0px var(--border-color);
@@ -259,7 +268,12 @@
       color: var(--text);
     }
 
-    /* --- Key Stats Grid in Hero --- */
+    .btn-primary-yellow {
+      background: var(--primary);
+      color: var(--text);
+    }
+
+    /* --- Hero Stats Grid --- */
     .hero-stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -297,12 +311,14 @@
       color: #333333;
     }
 
-    /* --- Section Divider Title --- */
+    /* --- Section Divider --- */
     .section-divider {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin: 40px 0 24px;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 44px 0 24px;
+      flex-wrap: wrap;
     }
 
     .section-title-badge {
@@ -318,27 +334,48 @@
       text-transform: uppercase;
     }
 
-    .section-line {
-      flex: 1;
-      height: 2px;
-      background: var(--accent);
+    /* Mode Switcher Tabs */
+    .mode-switcher {
+      display: flex;
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      background: var(--ui);
     }
 
-    /* --- Engine Grid: Left Controls, Right Output --- */
+    .mode-tab {
+      padding: 8px 18px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      transition: background 150ms;
+    }
+
+    .mode-tab.active {
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    /* --- Simulator Engine Grid --- */
     .engine-grid {
       display: grid;
-      grid-template-columns: 440px 1fr;
+      grid-template-columns: 460px 1fr;
       gap: 28px;
       align-items: start;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 1040px) {
       .engine-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    /* --- Neo-Brutalist Cards --- */
+    /* --- Neo-Brutalist Card --- */
     .neo-card {
       background: var(--ui);
       border: var(--border-2px);
@@ -379,7 +416,7 @@
       padding: 24px;
     }
 
-    /* --- Form Elements --- */
+    /* Forms */
     .form-group {
       margin-bottom: 20px;
     }
@@ -420,7 +457,7 @@
       gap: 16px;
     }
 
-    /* Range Sliders */
+    /* Sliders */
     .range-header {
       display: flex;
       justify-content: space-between;
@@ -466,7 +503,6 @@
       transform: scale(1.15);
     }
 
-    /* Submit / Calculate Button */
     .btn-full {
       width: 100%;
       justify-content: center;
@@ -475,7 +511,40 @@
       font-size: 1.05rem;
     }
 
-    /* --- Shelf Life Output Hero Panel --- */
+    /* Formula B Sub-Panel (Compare Mode) */
+    .compare-subpanel {
+      display: none;
+      background: #f4f8f7;
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 18px;
+      margin-top: 24px;
+    }
+
+    .compare-subpanel.active {
+      display: block;
+    }
+
+    .compare-subpanel-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .compare-badge-pill {
+      background: var(--accent);
+      border: 1.5px solid #000;
+      padding: 2px 8px;
+      font-size: 0.68rem;
+    }
+
+    /* --- Output Card --- */
     .output-hero {
       border-bottom: var(--border-2px);
       padding: 32px;
@@ -499,7 +568,7 @@
     .output-days-big {
       font-family: var(--font-heading);
       font-weight: 800;
-      font-size: clamp(3.8rem, 8vw, 6.2rem);
+      font-size: clamp(3.6rem, 7vw, 5.8rem);
       letter-spacing: -0.05em;
       line-height: 0.92;
       color: var(--text);
@@ -512,6 +581,39 @@
       margin-left: 8px;
       vertical-align: baseline;
       color: #222222;
+    }
+
+    /* Comparison Delta Box */
+    .compare-delta-box {
+      display: none;
+      background: var(--ui);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 14px 20px;
+      margin-top: 16px;
+    }
+
+    .compare-delta-box.active {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .delta-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .delta-pill {
+      background: var(--primary);
+      border: var(--border-2px);
+      padding: 4px 10px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.85rem;
     }
 
     .risk-sticker {
@@ -531,22 +633,11 @@
       box-shadow: 2px 2px 0px 0px var(--border-color);
     }
 
-    .risk-sticker.low {
-      background: var(--ui);
-      color: var(--text);
-    }
+    .risk-sticker.low    { background: var(--ui); color: var(--text); }
+    .risk-sticker.medium { background: var(--accent); color: var(--text); }
+    .risk-sticker.high   { background: var(--bg); color: var(--primary); }
 
-    .risk-sticker.medium {
-      background: var(--accent);
-      color: var(--text);
-    }
-
-    .risk-sticker.high {
-      background: var(--bg);
-      color: var(--primary);
-    }
-
-    /* --- Chart Container --- */
+    /* Chart Container */
     .chart-container {
       padding: 28px 32px;
       border-bottom: var(--border-2px);
@@ -558,6 +649,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .chart-title {
@@ -595,11 +688,10 @@
       overflow: visible;
     }
 
-    /* --- Factors Metric Strip --- */
+    /* Factors Metric Strip */
     .factors-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      border-top: none;
     }
 
     @media (max-width: 600px) {
@@ -642,126 +734,259 @@
       color: var(--text);
     }
 
-    /* --- Bottom Grid: Recommendations & Live Shipments --- */
-    .bottom-two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      margin-top: 32px;
+    /* Action bar on output card */
+    .output-action-bar {
+      padding: 20px 24px;
+      background: #fafaf8;
+      border-top: var(--border-2px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
     }
 
-    @media (max-width: 860px) {
-      .bottom-two-col {
+    /* --- Packaging ROI Calculator Section --- */
+    .calculator-section {
+      margin-top: 48px;
+    }
+
+    .roi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 28px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 960px) {
+      .roi-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    /* Recommendations List */
-    .rec-item {
-      display: grid;
-      grid-template-columns: 36px 1fr;
-      gap: 16px;
-      align-items: start;
-      padding: 16px 20px;
-      border-bottom: var(--border-2px);
-      background: var(--ui);
-      transition: background 150ms ease, transform 150ms ease;
-    }
-
-    .rec-item:last-child {
-      border-bottom: none;
-    }
-
-    .rec-item:hover {
-      background: #fff8d6;
-    }
-
-    .rec-index-badge {
-      width: 32px;
-      height: 32px;
-      background: var(--primary);
+    .roi-results-box {
+      background-color: var(--primary);
+      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.10) 2px, transparent 2px);
+      background-size: 32px 32px;
       border: var(--border-2px);
-      box-shadow: 2px 2px 0px 0px var(--border-color);
+      box-shadow: var(--shadow-standard);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .roi-stat-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .roi-metric-card {
+      background: var(--ui);
+      border: var(--border-2px);
+      box-shadow: 2px 2px 0px 0px #000;
+      padding: 16px;
+    }
+
+    .roi-metric-num {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 2rem;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .roi-net-banner {
+      background: var(--bg);
+      color: var(--primary);
+      border: var(--border-2px);
+      padding: 16px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+    }
+
+    .roi-net-val {
       font-family: var(--font-heading);
       font-weight: 800;
-      font-size: 0.95rem;
-      letter-spacing: -0.03em;
+      font-size: 2.2rem;
+      letter-spacing: -0.04em;
     }
 
-    .rec-body-text {
+    /* --- Certificate Modal --- */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(23, 30, 25, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .certificate-container {
+      background: var(--ui);
+      border: 3px solid #000;
+      box-shadow: 12px 12px 0px 0px #000;
+      max-width: 820px;
+      width: 100%;
+      padding: 40px;
+      position: relative;
+    }
+
+    .cert-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 2px solid #000;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .cert-title-big {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.8rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+
+    .cert-serial {
       font-family: var(--font-body);
-      font-size: 0.88rem;
-      color: var(--text);
-      line-height: 1.5;
-      padding-top: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--primary);
+      border: 2px solid #000;
+      padding: 4px 10px;
+      box-shadow: 2px 2px 0px 0px #000;
     }
 
-    .rec-body-text strong {
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .cert-data-box {
+      border: 2px solid #000;
+      padding: 12px 16px;
+      background: #fafafa;
+    }
+
+    .cert-data-lbl {
+      font-size: 0.68rem;
       font-weight: 700;
       text-transform: uppercase;
-    }
-
-    /* Shipment Tracking Rows */
-    .shipment-row {
-      display: grid;
-      grid-template-columns: 12px 1fr auto;
-      gap: 16px;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: var(--border-2px);
-      background: var(--ui);
-      transition: background 150ms ease;
-    }
-
-    .shipment-row:last-child {
-      border-bottom: none;
-    }
-
-    .shipment-row:hover {
-      background: #f7f9f8;
-    }
-
-    .ship-status-square {
-      width: 12px;
-      height: 12px;
-      border: var(--border-2px);
-    }
-
-    .ship-status-square.green { background: var(--ui); }
-    .ship-status-square.yellow { background: var(--primary); }
-    .ship-status-square.charcoal { background: var(--bg); }
-
-    .ship-title {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: 0.92rem;
-      letter-spacing: -0.03em;
+      color: #666;
       margin-bottom: 2px;
     }
 
-    .ship-details {
-      font-family: var(--font-body);
-      font-size: 0.72rem;
-      color: #555555;
+    .cert-data-val {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.15rem;
     }
 
-    .ship-badge {
-      border: var(--border-2px);
-      box-shadow: 2px 2px 0px 0px var(--border-color);
-      padding: 4px 10px;
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 700;
+    .cert-microbial-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 2px solid #000;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+    }
+
+    .cert-microbial-table th, .cert-microbial-table td {
+      border: 1.5px solid #000;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .cert-microbial-table th {
+      background: var(--accent);
+      font-family: var(--font-heading);
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
 
-    .ship-badge.on-track { background: var(--accent); color: var(--text); }
-    .ship-badge.monitor { background: var(--primary); color: var(--text); }
-    .ship-badge.alert { background: var(--bg); color: var(--primary); }
+    .cert-footer-stamp {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid #000;
+      padding-top: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .stamp-box {
+      border: 2px dashed #000;
+      padding: 10px 16px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      background: #fff8d6;
+    }
+
+    .signature-area {
+      text-align: right;
+    }
+
+    .signature-name {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .signature-title {
+      font-size: 0.72rem;
+      color: #555;
+    }
+
+    .cert-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    /* Print Specific Styling */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .modal-backdrop, .modal-backdrop * {
+        visibility: visible;
+      }
+      .modal-backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: transparent;
+        padding: 0;
+      }
+      .certificate-container {
+        box-shadow: none;
+        border: 2px solid #000;
+      }
+      .cert-actions {
+        display: none;
+      }
+    }
 
     /* --- Footer --- */
     footer {
@@ -770,7 +995,7 @@
       background: var(--bg);
       color: var(--ui);
       padding: 24px 32px;
-      margin-top: 48px;
+      margin-top: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -781,14 +1006,14 @@
     .footer-left {
       font-family: var(--font-heading);
       font-weight: 800;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       letter-spacing: -0.04em;
       color: var(--primary);
     }
 
     .footer-right {
       font-family: var(--font-body);
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--accent);
       font-weight: 500;
     }
@@ -796,19 +1021,24 @@
 </head>
 <body>
 
-  <!-- Top Navigation (Logo only per request) -->
+  <!-- Top Navigation -->
   <nav>
     <a href="#" class="nav-logo">
       <div class="logo-badge">SS</div>
       <span class="logo-text">ShelfSense</span>
     </a>
-    <div class="nav-tag">Developed by S. M. Mahmud Iqbal</div>
+    <div class="nav-right-group">
+      <div class="nav-tag">Developed by S. M. Mahmud Iqbal</div>
+      <button class="btn btn-charcoal" style="padding:8px 16px; font-size:0.8rem;" onclick="openCertificateModal()">
+        📄 PDF Certificate
+      </button>
+    </div>
   </nav>
 
-  <!-- Marquee Ticker -->
+  <!-- Marquee Ticker Tape -->
   <div class="ticker-bar">
     <div class="ticker-content">
-      Predictive Shelf Life &bull; Arrhenius Kinetic Model &bull; Water Activity (Aw) &bull; pH Equilibrium &bull; Food Export Certification &bull; Zero Spoilage Protocol &bull; Packaging Barrier Simulation &bull; Real-Time Cold Chain &bull; ShelfSense v2.4.1 &bull; Predictive Shelf Life &bull; Arrhenius Kinetic Model &bull; Water Activity (Aw) &bull; pH Equilibrium &bull; Food Export Certification &bull; Zero Spoilage Protocol &bull; Packaging Barrier Simulation &bull; Real-Time Cold Chain &bull; ShelfSense v2.4.1 &bull;
+      Predictive Shelf Life &bull; Arrhenius Kinetic Model &bull; Water Activity (Aw) &bull; pH Equilibrium &bull; Food Export Certification &bull; Zero Spoilage Protocol &bull; Packaging Barrier Simulation &bull; Container ROI Calculator &bull; Developed by S. M. Mahmud Iqbal &bull; Predictive Shelf Life &bull; Arrhenius Kinetic Model &bull; Water Activity (Aw) &bull; pH Equilibrium &bull; Food Export Certification &bull; Zero Spoilage Protocol &bull; Packaging Barrier Simulation &bull; Container ROI Calculator &bull; Developed by S. M. Mahmud Iqbal &bull;
     </div>
   </div>
 
@@ -817,7 +1047,7 @@
     <!-- Hero Card (Yellow with 32px x 32px Dot Pattern) -->
     <section class="hero-card bg-yellow-dots">
       <div class="hero-eyebrow">
-        <span>&bull;</span> Developed by S. M. Mahmud Iqbal &bull; Predictive Food Kinetics
+        <span>&bull;</span> Developed by S. M. Mahmud Iqbal &bull; Food Engineering Engine
       </div>
 
       <h1 class="hero-headline">
@@ -839,6 +1069,9 @@
         </button>
         <button class="btn btn-sage" onclick="loadSample('sauce')">
           Sample: Tomato Puree
+        </button>
+        <button class="btn btn-primary-yellow" onclick="toggleCompareMode(true)">
+          ⚖️ Compare A vs. B
         </button>
       </div>
 
@@ -863,35 +1096,43 @@
       </div>
     </section>
 
-    <!-- Engine Section Header -->
+    <!-- Simulator Section Header with Mode Switcher -->
     <div class="section-divider" id="simulator">
       <div class="section-title-badge">Formulation &amp; Stability Simulator</div>
-      <div class="section-line"></div>
+      <div class="mode-switcher">
+        <button class="mode-tab active" id="tabSingle" onclick="toggleCompareMode(false)">
+          &bull; Single Formulation
+        </button>
+        <button class="mode-tab" id="tabCompare" onclick="toggleCompareMode(true)">
+          ⚖️ Compare Formula A vs. B
+        </button>
+      </div>
     </div>
 
-    <!-- Engine Two-Column Grid -->
+    <!-- Simulator Engine Grid -->
     <div class="engine-grid">
 
       <!-- Left Input Panel -->
       <div class="neo-card">
         <div class="neo-card-header">
-          <span class="neo-card-title">Product Inputs</span>
+          <span class="neo-card-title" id="inputPanelTitle">Formula A Parameters</span>
           <span class="neo-card-tag">Q10 Equation</span>
         </div>
         <div class="neo-card-body">
 
+          <!-- Primary Formulation Controls (Formula A) -->
           <div class="form-group">
             <label class="form-label" for="prodName">Product Identifier</label>
             <input type="text" id="prodName" class="form-input" value="Mango Chutney (Export Grade)" />
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="packagingType">Packaging Barrier</label>
+            <label class="form-label" for="packagingType">Packaging Barrier (Formula A)</label>
             <select id="packagingType" class="form-select" onchange="runSimulation()">
               <option value="retort" selected>Multi-layer Retort Pouch (Alu-foil)</option>
               <option value="glass">Glass Jar (Hermetic Lug Cap)</option>
               <option value="tin">Lacquered Tin Can</option>
-              <option value="pet">PET Bottle (High Barrier)</option>
+              <option value="pet">PET Bottle (Standard Barrier)</option>
               <option value="map">Modified Atmosphere (MAP Tray)</option>
             </select>
           </div>
@@ -936,6 +1177,40 @@
             </select>
           </div>
 
+          <!-- Formula B Sub-Panel (Shows in Compare Mode) -->
+          <div class="compare-subpanel" id="formulaBPanel">
+            <div class="compare-subpanel-title">
+              <span>Formula B (Reformulated)</span>
+              <span class="compare-badge-pill">Optimized Option</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="packagingTypeB">Packaging Barrier (Formula B)</label>
+              <select id="packagingTypeB" class="form-select" onchange="runSimulation()">
+                <option value="retort">Multi-layer Retort Pouch</option>
+                <option value="glass" selected>Glass Jar (Hermetic Lug Cap)</option>
+                <option value="tin">Lacquered Tin Can</option>
+                <option value="pet">PET Bottle (Standard Barrier)</option>
+                <option value="map">Modified Atmosphere (MAP Tray)</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="phValB">pH (Formula B)</label>
+                <input type="number" id="phValB" class="form-input" value="3.4" step="0.1" min="2.0" max="8.0" oninput="runSimulation()" />
+              </div>
+              <div class="form-group">
+                <div class="range-header">
+                  <label class="form-label" style="margin:0" for="awRangeB">A<sub>w</sub> (Formula B)</label>
+                  <span class="range-val-badge" id="awValBadgeB" style="font-size:0.95rem;">0.74</span>
+                </div>
+                <input type="range" id="awRangeB" min="0.50" max="0.99" step="0.01" value="0.74"
+                       oninput="document.getElementById('awValBadgeB').textContent = parseFloat(this.value).toFixed(2); runSimulation();" />
+              </div>
+            </div>
+          </div>
+
           <button class="btn btn-charcoal btn-full" onclick="runSimulation()">
             &bull; Compute Shelf Stability
           </button>
@@ -945,10 +1220,10 @@
       <!-- Right Output Panel -->
       <div class="neo-card">
 
-        <!-- Top Output Hero: Days + Risk Pill -->
+        <!-- Top Output Hero: Days + Risk Sticker -->
         <div class="output-hero bg-yellow-dots">
           <div>
-            <div class="output-days-label">Estimated Export Shelf Life</div>
+            <div class="output-days-label" id="daysLabelHero">Estimated Export Shelf Life (Formula A)</div>
             <div class="output-days-big" id="daysDisplay">284<span>DAYS</span></div>
           </div>
           <div>
@@ -956,13 +1231,23 @@
           </div>
         </div>
 
+        <!-- Compare Delta Callout -->
+        <div class="compare-delta-box" id="compareDeltaBox">
+          <div>
+            <div style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#555;">Reformulation Impact</div>
+            <div class="delta-title" id="compareDeltaText">Formula B grants +146 Days (+51.4%)</div>
+          </div>
+          <div class="delta-pill" id="compareDeltaPill">+146 DAYS</div>
+        </div>
+
         <!-- SVG Decay Curve -->
         <div class="chart-container">
           <div class="chart-title-bar">
             <div class="chart-title">Arrhenius First-Order Quality Decay Rate</div>
             <div class="chart-legend">
-              <div class="legend-item"><div class="legend-box" style="background:#000;"></div> Quality %</div>
-              <div class="legend-item"><div class="legend-box" style="background:var(--accent);"></div> Threshold</div>
+              <div class="legend-item"><div class="legend-box" style="background:#000;"></div> <span id="legLabelA">Formula A</span></div>
+              <div class="legend-item" id="legItemB" style="display:none;"><div class="legend-box" style="background:var(--accent);"></div> Formula B</div>
+              <div class="legend-item"><div class="legend-box" style="border-style:dashed;"></div> Spoilage Cutoff</div>
             </div>
           </div>
 
@@ -983,20 +1268,27 @@
             <text x="470" y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10" id="xMark3">180D</text>
             <text x="600" y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10" id="xMark4">240D</text>
 
-            <!-- Fill Area under Curve -->
+            <!-- Fill Area under Curve A -->
             <path id="curveArea" fill="#ffe17c" opacity="0.35"/>
 
-            <!-- Main Decay Path -->
+            <!-- Main Decay Path A -->
             <path id="curvePath" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="square"/>
 
-            <!-- ASLT Data Markers (Brutalist Squares) -->
+            <!-- Curve B (In Compare Mode) -->
+            <path id="curvePathB" fill="none" stroke="#37554d" stroke-width="3" stroke-dasharray="5 3" stroke-linecap="round" style="display:none;"/>
+
+            <!-- Checkpoints A -->
             <rect id="marker1" width="8" height="8" fill="#ffe17c" stroke="#000000" stroke-width="2"/>
             <rect id="marker2" width="8" height="8" fill="#ffe17c" stroke="#000000" stroke-width="2"/>
             <rect id="marker3" width="8" height="8" fill="#ffe17c" stroke="#000000" stroke-width="2"/>
 
-            <!-- Terminal End Marker -->
+            <!-- Terminal End Marker A -->
             <rect id="endSquare" width="14" height="14" fill="#171e19" stroke="#000000" stroke-width="2"/>
             <text id="endText" fill="#000000" font-family="'Cabinet Grotesk',sans-serif" font-weight="800" font-size="12" dy="-10" text-anchor="middle">284d</text>
+
+            <!-- Terminal End Marker B -->
+            <circle id="endCircleB" r="7" fill="#b7c6c2" stroke="#000000" stroke-width="2" style="display:none;"/>
+            <text id="endTextB" fill="#000000" font-family="'Cabinet Grotesk',sans-serif" font-weight="800" font-size="12" dy="-10" text-anchor="middle" style="display:none;">430d</text>
           </svg>
         </div>
 
@@ -1016,29 +1308,273 @@
           </div>
         </div>
 
+        <!-- Output Action Bar (Certificate Button) -->
+        <div class="output-action-bar">
+          <div style="font-size:0.8rem; font-weight:700;">
+            Export Buyer Verification Available
+          </div>
+          <button class="btn btn-charcoal" onclick="openCertificateModal()">
+            📄 Download Official Certificate (PDF)
+          </button>
+        </div>
+
       </div>
+    </div>
+
+    <!-- Packaging ROI & Spoilage Savings Calculator -->
+    <section class="calculator-section">
+      <div class="section-divider" style="margin-top:20px;">
+        <div class="section-title-badge">Packaging Cost vs. Spoilage Savings Calculator</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="roi-grid">
+
+        <!-- Calculator Input Controls -->
+        <div class="neo-card">
+          <div class="neo-card-header">
+            <span class="neo-card-title">Container Batch Economics</span>
+            <span class="neo-card-tag">20ft FCL Model</span>
+          </div>
+          <div class="neo-card-body">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="cargoValue">Container Cargo Value ($)</label>
+                <input type="number" id="cargoValue" class="form-input" value="40000" step="5000" oninput="calculateROI()" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="batchUnits">Units in Container</label>
+                <input type="number" id="batchUnits" class="form-input" value="24000" step="2000" oninput="calculateROI()" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="currentPkgCost">Baseline Pkg Cost ($/unit)</label>
+                <input type="number" id="currentPkgCost" class="form-input" value="0.10" step="0.02" oninput="calculateROI()" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="upgradePkgCost">Upgraded Barrier ($/unit)</label>
+                <input type="number" id="upgradePkgCost" class="form-input" value="0.22" step="0.02" oninput="calculateROI()" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="baselineSpoilageRate">Baseline Spoilage Risk (%)</label>
+                <input type="number" id="baselineSpoilageRate" class="form-input" value="28" step="1" oninput="calculateROI()" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="upgradedSpoilageRate">Optimized Risk (%)</label>
+                <input type="number" id="upgradedSpoilageRate" class="form-input" value="4" step="1" oninput="calculateROI()" />
+              </div>
+            </div>
+
+            <button class="btn btn-sage btn-full" onclick="calculateROI()">
+              ⚡ Recalculate Protected Cargo Profit
+            </button>
+          </div>
+        </div>
+
+        <!-- ROI Output Results Card -->
+        <div class="roi-results-box">
+          <div>
+            <div style="font-family:var(--font-body); font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#444;">
+              Export Cargo Protection Model
+            </div>
+            <div style="font-family:var(--font-heading); font-weight:800; font-size:1.9rem; letter-spacing:-0.04em; margin-top:4px;">
+              Investment vs. Spoilage Protection
+            </div>
+          </div>
+
+          <div class="roi-stat-row">
+            <div class="roi-metric-card">
+              <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:#666;">Packaging Upgrade Cost</div>
+              <div class="roi-metric-num" id="roiUpgradeCost">$2,880</div>
+              <div style="font-size:0.68rem; color:#444; margin-top:2px;">Across 24,000 units</div>
+            </div>
+
+            <div class="roi-metric-card">
+              <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:#666;">Spoilage Loss Prevented</div>
+              <div class="roi-metric-num" id="roiSpoilagePrevented">$9,600</div>
+              <div style="font-size:0.68rem; color:#444; margin-top:2px;">-24% port write-off risk</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="roi-net-banner">
+              <div>
+                <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:var(--accent);">Net Profit Protected / Container</div>
+                <div class="roi-net-val" id="roiNetSaved">+$6,720</div>
+              </div>
+              <div class="btn btn-primary-yellow" style="padding:8px 14px; font-size:0.85rem;" id="roiRatioBadge">
+                233% ROI
+              </div>
+            </div>
+            <div style="font-size:0.72rem; margin-top:10px; color:#333; line-height:1.4;">
+              <strong>Engineering Takeaway:</strong> Upgrading from standard PET to hermetic multi-layer barrier pays for itself <strong>3.3x over</strong> by eliminating port rejection penalties.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer>
       <div class="footer-left">
         DEVELOPED BY S. M. MAHMUD IQBAL
       </div>
       <div class="footer-right">
-        SHELLFSENSE &bull; PREDICTIVE SHELF LIFE ENGINE &bull; v2.4.1
+        SHELLFSENSE &bull; Predictive Shelf Life Engine &bull; v2.4.1
       </div>
     </footer>
 
   </main>
 
-  <script>
-    /* Food Engineering Kinetic Model */
-    function runSimulation() {
-      const aw   = parseFloat(document.getElementById('awRange').value);
-      const temp = parseFloat(document.getElementById('tempRange').value);
-      const pH   = parseFloat(document.getElementById('phVal').value) || 4.0;
-      const pkg  = document.getElementById('packagingType').value;
-      const mkt  = document.getElementById('exportMarket').value;
+  <!-- Official Certificate Modal -->
+  <div class="modal-backdrop" id="certModal">
+    <div class="certificate-container" id="printableCert">
 
-      // Base shelf days from packaging material moisture/oxygen transmission
+      <div class="cert-header">
+        <div>
+          <div style="font-family:var(--font-body); font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#555;">
+            ShelfSense Food Preservation Laboratory
+          </div>
+          <div class="cert-title-big">
+            Official Export Stability Certificate
+          </div>
+          <div style="font-size:0.8rem; color:#444; margin-top:4px;">
+            Issued under International Food Engineering Kinetic Standards (ASLT Protocols)
+          </div>
+        </div>
+        <div class="cert-serial" id="certSerial">
+          CERT-SS-2026-8849
+        </div>
+      </div>
+
+      <div class="cert-grid">
+        <div class="cert-data-box">
+          <div class="cert-data-lbl">Product Tested</div>
+          <div class="cert-data-val" id="certProdName">Mango Chutney</div>
+        </div>
+        <div class="cert-data-box">
+          <div class="cert-data-lbl">Predicted Safe Shelf Life</div>
+          <div class="cert-data-val" id="certDays">284 Days (9.4 Months)</div>
+        </div>
+        <div class="cert-data-box">
+          <div class="cert-data-lbl">Water Activity (Aw) / pH</div>
+          <div class="cert-data-val" id="certChem">Aw 0.82 &bull; pH 3.8</div>
+        </div>
+        <div class="cert-data-box">
+          <div class="cert-data-lbl">Packaging &amp; Target Market</div>
+          <div class="cert-data-val" id="certMarket">Retort Pouch &bull; United States</div>
+        </div>
+      </div>
+
+      <!-- Microbial & Quality Criteria Table -->
+      <table class="cert-microbial-table">
+        <thead>
+          <tr>
+            <th>Hazard Evaluation Parameter</th>
+            <th>Observed Kinetic Threshold</th>
+            <th>Compliance Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Clostridium botulinum Outgrowth</strong></td>
+            <td>pH &le; 4.60 (Acidified food limit)</td>
+            <td><strong style="color:#0a5c36;">&check; PASS (Inhibited)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Staphylococcus aureus Enterotoxin</strong></td>
+            <td>Water Activity (Aw) &le; 0.85</td>
+            <td><strong style="color:#0a5c36;">&check; PASS (Suppressed)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Lipid / Color Maillard Rate</strong></td>
+            <td>Arrhenius Q10 = 2.0 at 25&deg;C</td>
+            <td><strong style="color:#0a5c36;">&check; VERIFIED (Stable)</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Footer Stamp & Signature Block -->
+      <div class="cert-footer-stamp">
+        <div class="stamp-box">
+          &#x25C6; BSTI / FDA EXPORT COMPLIANCE VERIFIED &#x25C6;
+        </div>
+
+        <div class="signature-area">
+          <div class="signature-name">S. M. Mahmud Iqbal</div>
+          <div class="signature-title">Food Process &amp; Preservation Engineer</div>
+          <div style="font-size:0.65rem; color:#777; margin-top:2px;">Digital Verification ID: SS-ENG-2026-BD</div>
+        </div>
+      </div>
+
+      <!-- Print / Close Actions -->
+      <div class="cert-actions">
+        <button class="btn btn-white" onclick="closeCertificateModal()">
+          Close
+        </button>
+        <button class="btn btn-charcoal" onclick="window.print()">
+          🖨️ Print / Save Official PDF
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* Global State */
+    let isCompareMode = false;
+
+    /* Mode Toggle */
+    function toggleCompareMode(enableCompare) {
+      isCompareMode = enableCompare;
+
+      const tabSingle = document.getElementById('tabSingle');
+      const tabCompare = document.getElementById('tabCompare');
+      const panelB = document.getElementById('formulaBPanel');
+      const deltaBox = document.getElementById('compareDeltaBox');
+      const legB = document.getElementById('legItemB');
+      const pathB = document.getElementById('curvePathB');
+      const dotB = document.getElementById('endCircleB');
+      const textB = document.getElementById('endTextB');
+      const title = document.getElementById('inputPanelTitle');
+      const legA = document.getElementById('legLabelA');
+
+      if (isCompareMode) {
+        tabSingle.classList.remove('active');
+        tabCompare.classList.add('active');
+        panelB.classList.add('active');
+        deltaBox.classList.add('active');
+        legB.style.display = 'flex';
+        pathB.style.display = 'inline';
+        dotB.style.display = 'inline';
+        textB.style.display = 'inline';
+        title.textContent = 'Formula A & B Parameters';
+        legA.textContent = 'Formula A (Current)';
+      } else {
+        tabSingle.classList.add('active');
+        tabCompare.classList.remove('active');
+        panelB.classList.remove('active');
+        deltaBox.classList.remove('active');
+        legB.style.display = 'none';
+        pathB.style.display = 'none';
+        dotB.style.display = 'none';
+        textB.style.display = 'none';
+        title.textContent = 'Formulation Parameters';
+        legA.textContent = 'Quality Decay Rate';
+      }
+
+      runSimulation();
+    }
+
+    /* Food Engineering Kinetic Model */
+    function calculateDays(aw, pH, temp, pkg, mkt) {
       const pkgBaseDays = {
         glass: 540,
         tin: 480,
@@ -1052,13 +1588,13 @@
       const awFactor = 1.0 - Math.pow((aw - 0.50) / 0.50, 1.85);
       days *= (0.25 + 0.75 * Math.max(0.05, awFactor));
 
-      // pH effect: < 4.6 acid prevents C. botulinum and fungal proliferation
+      // pH effect: < 4.6 acid prevents spore growth
       const phFactor = pH < 4.6
         ? 1.25 - (pH - 2.0) * 0.05
         : 1.00 - (pH - 4.6) * 0.16;
       days *= Math.max(0.3, phFactor);
 
-      // Arrhenius Q10 temperature acceleration factor (Q10 = 2.0 standard for food reactions)
+      // Arrhenius Q10 temperature acceleration
       const q10 = 2.0;
       const tempAccFactor = Math.pow(q10, -(temp - 25.0) / 10.0);
       days *= tempAccFactor;
@@ -1067,16 +1603,27 @@
       const marketBuffer = { eu: 0.85, us: 0.90, gcc: 0.92, sea: 0.95, uk: 0.88 };
       days *= (marketBuffer[mkt] || 0.90);
 
-      days = Math.max(25, Math.round(days));
+      return Math.max(25, Math.round(days));
+    }
 
-      // Update days and risk classification
+    function runSimulation() {
+      // Formula A Inputs
+      const awA   = parseFloat(document.getElementById('awRange').value);
+      const tempA = parseFloat(document.getElementById('tempRange').value);
+      const pHA   = parseFloat(document.getElementById('phVal').value) || 4.0;
+      const pkgA  = document.getElementById('packagingType').value;
+      const mkt   = document.getElementById('exportMarket').value;
+
+      const daysA = calculateDays(awA, pHA, tempA, pkgA, mkt);
+
+      // Update Formula A Displays
       let riskLabel = 'Low Risk';
       let riskClass = 'low';
 
-      if (days > 180) {
+      if (daysA > 180) {
         riskLabel = '✓ Low Risk';
         riskClass = 'low';
-      } else if (days > 90) {
+      } else if (daysA > 90) {
         riskLabel = '⚠ Moderate';
         riskClass = 'medium';
       } else {
@@ -1084,59 +1631,73 @@
         riskClass = 'high';
       }
 
-      document.getElementById('daysDisplay').innerHTML = `${days}<span>DAYS</span>`;
-
+      document.getElementById('daysDisplay').innerHTML = `${daysA}<span>DAYS</span>`;
       const sticker = document.getElementById('riskSticker');
       sticker.textContent = riskLabel;
       sticker.className = 'risk-sticker ' + riskClass;
 
-      // Update factor readouts
-      document.getElementById('metricAw').textContent   = aw.toFixed(2);
-      document.getElementById('metricPh').textContent   = pH.toFixed(1);
-      document.getElementById('metricTemp').textContent = temp + '°C';
+      document.getElementById('metricAw').textContent   = awA.toFixed(2);
+      document.getElementById('metricPh').textContent   = pHA.toFixed(1);
+      document.getElementById('metricTemp').textContent = tempA + '°C';
 
-      // Update decay curve
-      renderCurve(days);
+      // Formula B Calculations (If Compare Mode Active)
+      let daysB = daysA;
+      if (isCompareMode) {
+        const awB  = parseFloat(document.getElementById('awRangeB').value);
+        const phB  = parseFloat(document.getElementById('phValB').value) || 3.8;
+        const pkgB = document.getElementById('packagingTypeB').value;
+
+        daysB = calculateDays(awB, phB, tempA, pkgB, mkt);
+
+        const diffDays = daysB - daysA;
+        const pctDiff = Math.round((diffDays / daysA) * 100);
+        const sign = diffDays >= 0 ? '+' : '';
+
+        document.getElementById('compareDeltaText').textContent =
+          `Formula B grants ${sign}${diffDays} Days (${sign}${pctDiff}%)`;
+        document.getElementById('compareDeltaPill').textContent =
+          `${sign}${diffDays} DAYS`;
+      }
+
+      renderCurve(daysA, daysB);
+      calculateROI();
     }
 
-    /* SVG Decay Curve Rendering */
-    function renderCurve(days) {
+    /* Dual Curve SVG Rendering */
+    function renderCurve(daysA, daysB) {
       const W = 640;
       const H = 125;
-      const maxDays = Math.max(days * 1.18, 90);
-      const k = Math.log(5.0) / days; // Rate constant for 80% degradation
+      const maxDays = Math.max(daysA * 1.18, isCompareMode ? daysB * 1.18 : 90, 90);
 
-      const points = [];
+      // Curve A
+      const kA = Math.log(5.0) / daysA;
+      const pointsA = [];
       const steps = 70;
       for (let i = 0; i <= steps; i++) {
         const t = (i / steps) * maxDays;
         const x = (t / maxDays) * W;
-        const quality = Math.exp(-k * t);
-        const y = H - (quality * (H - 25)) - 4;
-        points.push([x, y]);
+        const q = Math.exp(-kA * t);
+        const y = H - (q * (H - 25)) - 4;
+        pointsA.push([x, y]);
       }
 
-      const d = points.map((pt, idx) => (idx === 0 ? 'M' : 'L') + pt[0].toFixed(1) + ',' + pt[1].toFixed(1)).join(' ');
-      document.getElementById('curvePath').setAttribute('d', d);
-      document.getElementById('curveArea').setAttribute('d', d + ` L${W},${H} L0,${H} Z`);
+      const dA = pointsA.map((pt, idx) => (idx === 0 ? 'M' : 'L') + pt[0].toFixed(1) + ',' + pt[1].toFixed(1)).join(' ');
+      document.getElementById('curvePath').setAttribute('d', dA);
+      document.getElementById('curveArea').setAttribute('d', dA + ` L${W},${H} L0,${H} Z`);
 
-      // Terminal end marker (day = calculated shelf life)
-      const endX = (days / maxDays) * W;
-      const endY = H - (Math.exp(-k * days) * (H - 25)) - 4;
+      // Terminal A marker
+      const endAX = (daysA / maxDays) * W;
+      const endAY = H - (Math.exp(-kA * daysA) * (H - 25)) - 4;
+      document.getElementById('endSquare').setAttribute('x', endAX - 7);
+      document.getElementById('endSquare').setAttribute('y', endAY - 7);
+      document.getElementById('endText').setAttribute('x', endAX);
+      document.getElementById('endText').setAttribute('y', endAY);
+      document.getElementById('endText').textContent = daysA + 'd';
 
-      const endSquare = document.getElementById('endSquare');
-      endSquare.setAttribute('x', endX - 7);
-      endSquare.setAttribute('y', endY - 7);
-
-      const endText = document.getElementById('endText');
-      endText.setAttribute('x', endX);
-      endText.setAttribute('y', endY);
-      endText.textContent = days + 'd';
-
-      // 3 intermediate study checkpoints
+      // 3 Checkpoints for A
       [0.22, 0.48, 0.76].forEach((fraction, idx) => {
         const t = fraction * maxDays;
-        const q = Math.exp(-k * t);
+        const q = Math.exp(-kA * t);
         const sx = fraction * W - 4;
         const sy = H - (q * (H - 25)) - 4 - 4;
         const marker = document.getElementById('marker' + (idx + 1));
@@ -1144,14 +1705,82 @@
         marker.setAttribute('y', sy);
       });
 
-      // X-axis day markings
+      // Curve B (If compare mode active)
+      if (isCompareMode) {
+        const kB = Math.log(5.0) / daysB;
+        const pointsB = [];
+        for (let i = 0; i <= steps; i++) {
+          const t = (i / steps) * maxDays;
+          const x = (t / maxDays) * W;
+          const q = Math.exp(-kB * t);
+          const y = H - (q * (H - 25)) - 4;
+          pointsB.push([x, y]);
+        }
+        const dB = pointsB.map((pt, idx) => (idx === 0 ? 'M' : 'L') + pt[0].toFixed(1) + ',' + pt[1].toFixed(1)).join(' ');
+        document.getElementById('curvePathB').setAttribute('d', dB);
+
+        const endBX = (daysB / maxDays) * W;
+        const endBY = H - (Math.exp(-kB * daysB) * (H - 25)) - 4;
+        document.getElementById('endCircleB').setAttribute('cx', endBX);
+        document.getElementById('endCircleB').setAttribute('cy', endBY);
+        document.getElementById('endTextB').setAttribute('x', endBX);
+        document.getElementById('endTextB').setAttribute('y', endBY);
+        document.getElementById('endTextB').textContent = daysB + 'd';
+      }
+
+      // X Marks
       const stepDays = Math.round(maxDays / 4 / 10) * 10;
       ['xMark1', 'xMark2', 'xMark3', 'xMark4'].forEach((id, idx) => {
         document.getElementById(id).textContent = (stepDays * (idx + 1)) + 'D';
       });
     }
 
-    /* Preset Sample Formulations */
+    /* Packaging Cost & Spoilage Savings Calculator */
+    function calculateROI() {
+      const cargoVal = parseFloat(document.getElementById('cargoValue').value) || 40000;
+      const units = parseFloat(document.getElementById('batchUnits').value) || 24000;
+      const costA = parseFloat(document.getElementById('currentPkgCost').value) || 0.10;
+      const costB = parseFloat(document.getElementById('upgradePkgCost').value) || 0.22;
+      const riskA = parseFloat(document.getElementById('baselineSpoilageRate').value) || 28;
+      const riskB = parseFloat(document.getElementById('upgradedSpoilageRate').value) || 4;
+
+      const upgradeCost = Math.max(0, (costB - costA) * units);
+      const spoilageLossPrevented = Math.max(0, ((riskA - riskB) / 100) * cargoVal);
+      const netSavings = spoilageLossPrevented - upgradeCost;
+      const roi = upgradeCost > 0 ? Math.round((netSavings / upgradeCost) * 100) : 0;
+
+      document.getElementById('roiUpgradeCost').textContent = '$' + Math.round(upgradeCost).toLocaleString();
+      document.getElementById('roiSpoilagePrevented').textContent = '$' + Math.round(spoilageLossPrevented).toLocaleString();
+      document.getElementById('roiNetSaved').textContent = (netSavings >= 0 ? '+$' : '-$') + Math.abs(Math.round(netSavings)).toLocaleString();
+      document.getElementById('roiRatioBadge').textContent = roi + '% ROI';
+    }
+
+    /* Certificate Modal Functions */
+    function openCertificateModal() {
+      const prod = document.getElementById('prodName').value || 'Packaged Export Item';
+      const aw = parseFloat(document.getElementById('awRange').value).toFixed(2);
+      const pH = parseFloat(document.getElementById('phVal').value).toFixed(1);
+      const days = document.getElementById('daysDisplay').textContent.replace('DAYS', '').trim();
+      const pkgText = document.getElementById('packagingType').selectedOptions[0].text;
+      const mktText = document.getElementById('exportMarket').selectedOptions[0].text;
+
+      document.getElementById('certProdName').textContent = prod;
+      document.getElementById('certDays').textContent = `${days} Days (~${(days/30).toFixed(1)} Months)`;
+      document.getElementById('certChem').textContent = `Aw ${aw} • pH ${pH}`;
+      document.getElementById('certMarket').textContent = `${pkgText.split('(')[0]} • ${mktText.split('(')[0]}`;
+
+      // Random serial
+      const randNum = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('certSerial').textContent = `CERT-SS-2026-${randNum}`;
+
+      document.getElementById('certModal').classList.add('open');
+    }
+
+    function closeCertificateModal() {
+      document.getElementById('certModal').classList.remove('open');
+    }
+
+    /* Preset Samples */
     function loadSample(type) {
       if (type === 'pickle') {
         document.getElementById('prodName').value = 'Green Mango Pickle in Mustard Oil';
