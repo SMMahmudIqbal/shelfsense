@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShelfSense — Predictive Shelf Life Engine</title>
 
-  <!-- Fonts: Clash Display + Satoshi via Fontshare -->
+  <!-- Fonts: Cabinet Grotesk + Satoshi via Fontshare -->
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600&f[]=satoshi@500,400,700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500,400&f[]=satoshi@500,400,700&display=swap" rel="stylesheet" />
 
   <style>
     /* ── Reset ──────────────────────────────────────────── */
@@ -15,681 +15,647 @@
 
     /* ── Tokens ─────────────────────────────────────────── */
     :root {
-      --bg:       #f2f2f2;
-      --ink:      #111111;
-      --ink-2:    #838282;
-      --ink-3:    #b6b5b5;
-      --echo-1:   #bfbfbf;
-      --echo-2:   #c8c8c8;
-      --echo-3:   #d0d0d0;
-      --echo-4:   #d9d9d9;
-      --border:   #111111;
-      --accent:   #111111;
+      --yellow:   #ffe17c;
+      --charcoal: #171e19;
+      --sage:     #b7c6c2;
+      --white:    #ffffff;
+      --black:    #000000;
 
-      --font-head: 'Clash Display', sans-serif;
+      --border:       2px solid var(--black);
+      --shadow-sm:    4px 4px 0px 0px var(--black);
+      --shadow-lg:    8px 8px 0px 0px var(--black);
+      --shadow-inner: inset 2px 2px 0px 0px rgba(0,0,0,0.15);
+
+      --font-head: 'Cabinet Grotesk', sans-serif;
       --font-body: 'Satoshi', sans-serif;
 
-      --ease-reveal: cubic-bezier(0.77, 0, 0.175, 1);
-      --dur-reveal: 700ms;
+      --ease-press: cubic-bezier(0.77, 0, 0.175, 1);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
-      color: var(--ink);
+      background: var(--charcoal);
+      color: var(--black);
       font-family: var(--font-body);
       font-weight: 500;
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
-    /* ── Grid System ────────────────────────────────────── */
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 32px;
+    /* ── Dot Pattern Utility ────────────────────────────── */
+    .dot-bg {
+      background-color: var(--yellow);
+      background-image: radial-gradient(circle, #000 1.2px, transparent 1.2px);
+      background-size: 32px 32px;
+      background-position: 0 0;
+      /* opacity of dots ~10% via color */
+      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
     }
 
     /* ── NAV ────────────────────────────────────────────── */
     nav {
+      background: var(--yellow);
+      border-bottom: var(--border);
+      padding: 0 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 32px;
-      border-bottom: 1.5px solid var(--border);
+      height: 64px;
       position: sticky;
       top: 0;
-      background: var(--bg);
       z-index: 100;
+      background-color: var(--yellow);
+      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
+      background-size: 32px 32px;
     }
 
     .nav-logo {
       font-family: var(--font-head);
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.25rem;
+      font-weight: 800;
       letter-spacing: -0.04em;
-      color: var(--ink);
+      color: var(--black);
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .nav-logo .logo-sq {
-      width: 28px; height: 28px;
-      background: var(--ink);
+    .logo-box {
+      width: 36px; height: 36px;
+      background: var(--charcoal);
+      border: var(--border);
+      box-shadow: 3px 3px 0 var(--black);
       display: flex; align-items: center; justify-content: center;
-      color: var(--bg);
-      font-size: 0.65rem;
+      color: var(--yellow);
+      font-size: 0.7rem;
       font-family: var(--font-body);
       font-weight: 700;
       letter-spacing: 0.05em;
+      flex-shrink: 0;
     }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-family: var(--font-body);
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--ink-2);
-      text-decoration: none;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      transition: color 200ms;
-    }
-    .nav-links a:hover { color: var(--ink); }
-
-    .nav-cta {
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--bg);
-      background: var(--ink);
-      border: none;
-      padding: 10px 22px;
-      cursor: pointer;
-      transition: transform 200ms var(--ease-reveal), background 200ms;
-    }
-    .nav-cta:hover { transform: scale(1.04); }
 
     /* ── HERO ───────────────────────────────────────────── */
     .hero {
-      padding: 80px 32px 60px;
-      border-bottom: 1.5px solid var(--border);
+      background-color: var(--yellow);
+      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
+      background-size: 32px 32px;
+      border-bottom: var(--border);
+      padding: 64px 32px 56px;
       display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 0;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
       align-items: end;
-      overflow: hidden;
     }
 
-    .hero-left { padding-right: 60px; }
-
-    /* ── Echo Effect ────────────────────────────────────── */
-    .echo-wrap {
-      position: relative;
-      line-height: 0.9;
-      margin-bottom: 40px;
-      user-select: none;
-    }
-
-    .echo-layer {
+    .hero-headline {
       font-family: var(--font-head);
-      font-size: clamp(72px, 10vw, 140px);
-      font-weight: 700;
-      letter-spacing: -0.05em;
-      line-height: 0.9;
-      display: block;
-      white-space: nowrap;
+      font-size: clamp(52px, 8vw, 110px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.92;
+      color: var(--black);
+      margin-bottom: 28px;
     }
 
-    /* Background echo layers */
-    .echo-layer.e4 { color: var(--echo-4); position: absolute; top: 0; left: 0; transform: translate(-0.16em, -0.16em); z-index: 1; }
-    .echo-layer.e3 { color: var(--echo-3); position: absolute; top: 0; left: 0; transform: translate(-0.12em, -0.12em); z-index: 2; }
-    .echo-layer.e2 { color: var(--echo-2); position: absolute; top: 0; left: 0; transform: translate(-0.08em, -0.08em); z-index: 3; }
-    .echo-layer.e1 { color: var(--echo-1); position: absolute; top: 0; left: 0; transform: translate(-0.04em, -0.04em); z-index: 4; }
-    /* Primary text on top */
-    .echo-layer.e0 { color: var(--ink); position: relative; z-index: 5; }
+    .hero-headline em {
+      font-style: normal;
+      color: var(--charcoal);
+      -webkit-text-stroke: 2px var(--black);
+      color: transparent;
+    }
 
     .hero-sub {
       font-family: var(--font-body);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 500;
-      color: var(--ink-2);
-      line-height: 1.6;
-      max-width: 440px;
-      margin-bottom: 40px;
-      letter-spacing: 0.01em;
+      color: var(--charcoal);
+      line-height: 1.65;
+      max-width: 480px;
+      margin-bottom: 36px;
     }
 
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
 
-    .btn-primary {
+    /* ── Buttons ────────────────────────────────────────── */
+    .btn {
       font-family: var(--font-body);
       font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--bg);
-      background: var(--ink);
-      border: 1.5px solid var(--ink);
-      padding: 14px 32px;
+      padding: 13px 28px;
+      border: var(--border);
       cursor: pointer;
-      transition: transform var(--dur-reveal) var(--ease-reveal),
-                  background 300ms, color 300ms;
-      clip-path: inset(0 100% 0 0);
-      animation: revealBtn var(--dur-reveal) var(--ease-reveal) 0.3s forwards;
-    }
-    @keyframes revealBtn { to { clip-path: inset(0 0% 0 0); } }
-    .btn-primary:hover { transform: scale(1.05); }
-
-    .btn-ghost {
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--ink-2);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--ink-3);
-      transition: color 200ms, border-color 200ms;
-    }
-    .btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
-
-    /* ── Hero Stats Panel ───────────────────────────────── */
-    .hero-right {
-      border-left: 1.5px solid var(--border);
-      padding-left: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .hero-stat {
-      padding: 24px 0;
-      border-bottom: 1px solid var(--ink-3);
-    }
-    .hero-stat:last-child { border-bottom: none; }
-
-    .hero-stat-val {
-      font-family: var(--font-head);
-      font-size: 2.8rem;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      color: var(--ink);
-      margin-bottom: 4px;
-    }
-
-    .hero-stat-label {
-      font-family: var(--font-body);
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--ink-2);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    /* ── SECTION HEADER ─────────────────────────────────── */
-    .section-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      padding: 32px 32px 0;
-      margin-bottom: 0;
-    }
-
-    .section-label {
-      font-family: var(--font-body);
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--ink-2);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      display: flex;
+      transition: transform 200ms var(--ease-press), box-shadow 200ms var(--ease-press);
+      display: inline-flex;
       align-items: center;
       gap: 8px;
     }
-    .section-label::before {
-      content: '';
-      display: inline-block;
-      width: 16px; height: 1.5px;
-      background: var(--ink-2);
+
+    .btn-primary {
+      background: var(--charcoal);
+      color: var(--yellow);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-primary:hover  { transform: translate(4px, 4px); box-shadow: none; }
+    .btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--black);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-outline:hover  { transform: translate(4px, 4px); box-shadow: none; }
+    .btn-outline:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
+
+    /* ── Hero Stats ─────────────────────────────────────── */
+    .hero-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-self: stretch;
+      justify-content: flex-end;
     }
 
-    .section-num {
+    .hero-stat {
+      border: var(--border);
+      background: var(--white);
+      padding: 18px 24px;
+      margin-top: -2px;
+      min-width: 180px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 200ms var(--ease-press), box-shadow 200ms var(--ease-press);
+    }
+    .hero-stat:hover { transform: translate(4px, 4px); box-shadow: none; }
+
+    .stat-val {
       font-family: var(--font-head);
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--ink-3);
-      letter-spacing: 0.05em;
-    }
-
-    /* ── MAIN TOOL AREA ─────────────────────────────────── */
-    .tool-grid {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      border-top: 1.5px solid var(--border);
-      margin-top: 32px;
-    }
-
-    /* ── Input Panel ────────────────────────────────────── */
-    .input-panel {
-      border-right: 1.5px solid var(--border);
-      padding: 40px 32px;
-    }
-
-    .panel-title {
-      font-family: var(--font-head);
-      font-size: 1.4rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 800;
       letter-spacing: -0.04em;
       line-height: 1;
-      color: var(--ink);
-      margin-bottom: 32px;
+      color: var(--black);
+    }
+    .stat-label {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
     }
 
-    .field-group { margin-bottom: 24px; }
+    /* ── Wrapper ────────────────────────────────────────── */
+    .wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ── Section Tag ────────────────────────────────────── */
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--black);
+      background: var(--sage);
+      border: var(--border);
+      padding: 5px 12px;
+      box-shadow: 3px 3px 0 var(--black);
+      margin-bottom: 24px;
+    }
+
+    /* ── MAIN TOOL ──────────────────────────────────────── */
+    .tool-section {
+      background: var(--charcoal);
+      padding: 48px 32px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ── Card ───────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-head {
+      background: var(--charcoal);
+      padding: 18px 24px;
+      border-bottom: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-head-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--yellow);
+    }
+
+    .card-head-badge {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--yellow);
+      color: var(--black);
+      border: 1.5px solid var(--black);
+      padding: 3px 8px;
+    }
+
+    .card-body { padding: 24px; }
+
+    /* ── Form Fields ────────────────────────────────────── */
+    .field { margin-bottom: 20px; }
 
     .field-label {
       font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--ink-2);
+      font-size: 0.68rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      color: #333;
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
     }
 
     .field-input {
       width: 100%;
       font-family: var(--font-body);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      color: var(--ink);
-      background: transparent;
-      border: none;
-      border-bottom: 1.5px solid var(--ink-3);
-      padding: 10px 0;
+      color: var(--black);
+      background: var(--white);
+      border: var(--border);
+      padding: 10px 12px;
       outline: none;
-      transition: border-color 300ms;
+      box-shadow: var(--shadow-inner);
+      transition: box-shadow 150ms;
       appearance: none;
       -webkit-appearance: none;
     }
-    .field-input:focus { border-color: var(--ink); }
+    .field-input:focus { box-shadow: 3px 3px 0 var(--black); }
 
     select.field-input {
       cursor: pointer;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23111'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23000'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 4px center;
-      padding-right: 20px;
+      background-position: right 10px center;
+      padding-right: 28px;
     }
 
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-    /* ── Range Slider ───────────────────────────────────── */
-    .range-group { margin-bottom: 28px; }
-
-    .range-top {
+    /* ── Range ──────────────────────────────────────────── */
+    .range-head {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       margin-bottom: 10px;
     }
-
-    .range-val-display {
+    .range-val {
       font-family: var(--font-head);
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.2rem;
+      font-weight: 800;
       letter-spacing: -0.03em;
-      color: var(--ink);
+      color: var(--black);
+      background: var(--yellow);
+      border: var(--border);
+      padding: 2px 10px;
+      box-shadow: 2px 2px 0 var(--black);
+      min-width: 64px;
+      text-align: center;
     }
 
     input[type="range"] {
       width: 100%;
       -webkit-appearance: none;
       appearance: none;
-      height: 1.5px;
-      background: var(--ink-3);
+      height: 6px;
+      background: var(--black);
       outline: none;
       cursor: pointer;
+      margin-bottom: 4px;
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
-      width: 16px; height: 16px;
-      background: var(--ink);
-      border-radius: 0; /* square thumb — Swiss style */
+      width: 20px; height: 20px;
+      background: var(--yellow);
+      border: var(--border);
+      box-shadow: 2px 2px 0 var(--black);
       cursor: pointer;
-      transition: transform 200ms;
+      transition: transform 150ms;
     }
-    input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.3); }
+    input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.2); }
 
-    /* ── Run Button ─────────────────────────────────────── */
+    /* ── Run Btn ────────────────────────────────────────── */
     .run-btn {
       width: 100%;
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
-      color: var(--bg);
-      background: var(--ink);
-      border: 1.5px solid var(--ink);
+      color: var(--yellow);
+      background: var(--charcoal);
+      border: var(--border);
       padding: 16px;
       cursor: pointer;
+      box-shadow: var(--shadow-sm);
       margin-top: 8px;
-      transition: transform var(--dur-reveal) var(--ease-reveal),
-                  background 200ms, color 200ms;
-      position: relative;
-      overflow: hidden;
+      transition: transform 200ms var(--ease-press), box-shadow 200ms var(--ease-press);
     }
-    .run-btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--bg);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform var(--dur-reveal) var(--ease-reveal);
-      z-index: 0;
+    .run-btn:hover  { transform: translate(4px, 4px); box-shadow: none; }
+    .run-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
+
+    /* ── Output Card ────────────────────────────────────── */
+    .output-card {
+      background: var(--white);
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
     }
-    .run-btn:hover::after { transform: scaleX(1); }
-    .run-btn:hover { color: var(--ink); }
-    .run-btn span { position: relative; z-index: 1; }
-    .run-btn:active { transform: scale(0.98); }
 
-    /* ── Output Panel ───────────────────────────────────── */
-    .output-panel { padding: 40px 40px; }
-
-    /* ── Result Header ──────────────────────────────────── */
-    .result-header {
+    /* ── Result Hero ────────────────────────────────────── */
+    .result-hero {
+      background-color: var(--yellow);
+      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
+      background-size: 32px 32px;
+      border-bottom: var(--border);
+      padding: 32px;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      margin-bottom: 40px;
-      padding-bottom: 28px;
-      border-bottom: 1px solid var(--ink-3);
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
     .result-days-label {
       font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--ink-2);
+      font-size: 0.68rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 8px;
+      color: #333;
+      margin-bottom: 6px;
     }
-
-    .result-days-val {
+    .result-days {
       font-family: var(--font-head);
-      font-size: 5rem;
-      font-weight: 700;
+      font-size: 6rem;
+      font-weight: 800;
       letter-spacing: -0.05em;
       line-height: 0.9;
-      color: var(--ink);
-      transition: all 400ms var(--ease-reveal);
+      color: var(--black);
     }
-    .result-days-unit {
-      font-family: var(--font-body);
-      font-size: 1rem;
+    .result-days sub {
+      font-size: 1.4rem;
       font-weight: 500;
-      color: var(--ink-2);
-      margin-left: 6px;
-    }
-
-    .risk-tag {
       font-family: var(--font-body);
-      font-size: 0.72rem;
+      letter-spacing: 0;
+      vertical-align: baseline;
+      color: #444;
+    }
+
+    .risk-badge {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
       font-weight: 700;
-      letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 8px 16px;
-      border: 1.5px solid var(--ink);
-      color: var(--ink);
-      background: transparent;
-      transition: background 300ms, color 300ms;
+      letter-spacing: 0.08em;
+      padding: 10px 18px;
+      border: var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: transform 200ms var(--ease-press), box-shadow 200ms;
     }
-    .risk-tag.low    { border-color: var(--ink); }
-    .risk-tag.medium { border-color: var(--ink-2); color: var(--ink-2); }
-    .risk-tag.high   { background: var(--ink); color: var(--bg); }
+    .risk-badge:hover { transform: translate(4px, 4px); box-shadow: none; }
+    .risk-badge.low    { background: var(--white); color: var(--black); }
+    .risk-badge.medium { background: var(--sage);  color: var(--black); }
+    .risk-badge.high   { background: var(--charcoal); color: var(--yellow); }
 
-    /* ── SVG Chart ──────────────────────────────────────── */
-    .chart-wrap {
-      margin-bottom: 32px;
-      position: relative;
-    }
-
-    svg.main-chart {
-      width: 100%;
-      overflow: visible;
+    /* ── Chart ──────────────────────────────────────────── */
+    .chart-zone {
+      padding: 28px 32px;
+      border-bottom: var(--border);
     }
 
-    /* ── Factor Grid ────────────────────────────────────── */
-    .factor-grid {
+    svg.neo-chart { width: 100%; overflow: visible; }
+
+    /* ── Factor Row ─────────────────────────────────────── */
+    .factor-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-      border-top: 1.5px solid var(--border);
-      border-left: 1.5px solid var(--border);
-      margin-bottom: 32px;
+      border-top: var(--border);
     }
 
     .factor-cell {
-      border-right: 1.5px solid var(--border);
-      border-bottom: 1.5px solid var(--border);
-      padding: 20px;
+      padding: 20px 24px;
+      border-right: var(--border);
+      background: var(--white);
       cursor: default;
-      transition: background var(--dur-reveal) var(--ease-reveal);
-      position: relative;
-      overflow: hidden;
+      transition: background 200ms, transform 150ms;
     }
-    .factor-cell::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--ink);
-      clip-path: inset(0 100% 0 0);
-      transition: clip-path var(--dur-reveal) var(--ease-reveal);
-      z-index: 0;
-    }
-    .factor-cell:hover::before { clip-path: inset(0 0% 0 0); }
-    .factor-cell:hover .factor-name,
-    .factor-cell:hover .factor-score { color: var(--bg); }
+    .factor-cell:last-child { border-right: none; }
+    .factor-cell:hover { background: var(--yellow); }
 
-    .factor-name {
+    .fc-label {
       font-family: var(--font-body);
       font-size: 0.65rem;
-      font-weight: 500;
-      color: var(--ink-2);
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 8px;
-      position: relative; z-index: 1;
-      transition: color 300ms;
+      color: #666;
+      margin-bottom: 6px;
     }
-    .factor-score {
+    .fc-val {
       font-family: var(--font-head);
-      font-size: 1.6rem;
-      font-weight: 700;
+      font-size: 1.8rem;
+      font-weight: 800;
       letter-spacing: -0.04em;
-      color: var(--ink);
-      position: relative; z-index: 1;
-      transition: color 300ms;
+      color: var(--black);
     }
 
-    /* ── Bottom Strip ───────────────────────────────────── */
-    .bottom-strip {
+    /* ── Bottom Panels ──────────────────────────────────── */
+    .bottom-section {
+      background: var(--charcoal);
+      padding: 0 32px 48px;
+    }
+
+    .bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      border-top: 1.5px solid var(--border);
+      gap: 24px;
+    }
+
+    .panel-card {
+      background: var(--white);
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .panel-head {
+      background-color: var(--sage);
+      border-bottom: var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-family: var(--font-head);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+
+    .panel-count {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: var(--charcoal);
+      color: var(--yellow);
+      padding: 2px 8px;
+      letter-spacing: 0.04em;
     }
 
     /* ── Recs ───────────────────────────────────────────── */
-    .recs-panel {
-      border-right: 1.5px solid var(--border);
-      padding: 32px;
-    }
-
-    .strip-title {
-      font-family: var(--font-head);
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 24px;
-    }
-
-    .rec-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--ink-3);
+    .rec-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e8e8e8;
       cursor: default;
-      transition: padding-left var(--dur-reveal) var(--ease-reveal);
+      transition: background 150ms, padding-left 300ms cubic-bezier(0.77,0,0.175,1);
     }
-    .rec-row:hover { padding-left: 8px; }
-    .rec-row:last-child { border-bottom: none; }
+    .rec-item:last-child { border-bottom: none; }
+    .rec-item:hover { background: #fffbf0; padding-left: 28px; }
 
     .rec-num {
       font-family: var(--font-head);
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--ink-3);
-      min-width: 24px;
-      padding-top: 2px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--black);
+      background: var(--yellow);
+      border: var(--border);
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 2px 2px 0 var(--black);
+      flex-shrink: 0;
     }
 
     .rec-text {
       font-family: var(--font-body);
-      font-size: 0.82rem;
+      font-size: 0.83rem;
       font-weight: 500;
-      color: var(--ink-2);
+      color: #333;
       line-height: 1.55;
+      padding-top: 6px;
     }
-    .rec-text strong { color: var(--ink); font-weight: 700; }
+    .rec-text strong { color: var(--black); font-weight: 700; }
 
     /* ── Shipments ──────────────────────────────────────── */
-    .shipments-panel { padding: 32px; }
-
-    .shipment-row {
+    .ship-item {
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
+      grid-template-columns: 10px 1fr auto;
       gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--ink-3);
+      align-items: center;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e8e8e8;
       cursor: default;
-      transition: padding-left var(--dur-reveal) var(--ease-reveal);
+      transition: background 150ms;
     }
-    .shipment-row:hover { padding-left: 8px; }
-    .shipment-row:last-child { border-bottom: none; }
+    .ship-item:last-child { border-bottom: none; }
+    .ship-item:hover { background: #f5f5f5; }
 
-    .ship-indicator {
-      width: 6px; height: 6px;
-      background: var(--ink);
+    .ship-dot {
+      width: 10px; height: 10px;
+      background: var(--charcoal);
+      border: var(--border);
       flex-shrink: 0;
     }
-    .ship-indicator.warn { background: var(--ink-2); }
-    .ship-indicator.crit { background: var(--ink); outline: 2px solid var(--ink); outline-offset: 2px; }
+    .ship-dot.warn { background: var(--sage); }
+    .ship-dot.crit {
+      background: var(--yellow);
+      box-shadow: 0 0 0 2px var(--black);
+    }
 
     .ship-name {
       font-family: var(--font-body);
-      font-size: 0.82rem;
+      font-size: 0.83rem;
       font-weight: 700;
-      color: var(--ink);
+      color: var(--black);
       margin-bottom: 2px;
     }
     .ship-meta {
       font-family: var(--font-body);
       font-size: 0.68rem;
-      font-weight: 400;
-      color: var(--ink-2);
-      letter-spacing: 0.03em;
+      color: #666;
+      letter-spacing: 0.02em;
     }
 
-    .ship-status {
+    .ship-tag {
       font-family: var(--font-body);
       font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       padding: 4px 10px;
-      border: 1px solid var(--ink-3);
-      color: var(--ink-2);
+      border: var(--border);
       white-space: nowrap;
-      transition: background var(--dur-reveal) var(--ease-reveal), color 300ms;
+      transition: transform 150ms var(--ease-press), box-shadow 150ms;
+      box-shadow: 2px 2px 0 var(--black);
+      cursor: default;
     }
-    .ship-status.active { border-color: var(--ink); color: var(--ink); }
-    .ship-status.alert { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-    .ship-status:hover { background: var(--ink); color: var(--bg); }
+    .ship-tag:hover { transform: translate(2px, 2px); box-shadow: none; }
+    .ship-tag.ok   { background: var(--white); }
+    .ship-tag.mon  { background: var(--sage); }
+    .ship-tag.alert{ background: var(--charcoal); color: var(--yellow); }
 
     /* ── Footer ─────────────────────────────────────────── */
     footer {
-      border-top: 1.5px solid var(--border);
-      padding: 20px 32px;
+      background: var(--black);
+      border-top: var(--border);
+      padding: 18px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .footer-copy {
+    .footer-text {
       font-family: var(--font-body);
       font-size: 0.72rem;
       font-weight: 500;
-      color: var(--ink-2);
-      letter-spacing: 0.04em;
+      color: var(--sage);
+      letter-spacing: 0.03em;
     }
-    .footer-copy span { color: var(--ink); font-weight: 700; }
-
-    /* ── Reveal Animations ──────────────────────────────── */
-    .reveal {
-      clip-path: inset(0 100% 0 0);
-      animation: reveal var(--dur-reveal) var(--ease-reveal) forwards;
-    }
-    .reveal-d1 { animation-delay: 0.1s; }
-    .reveal-d2 { animation-delay: 0.25s; }
-    .reveal-d3 { animation-delay: 0.4s; }
-    @keyframes reveal { to { clip-path: inset(0 0% 0 0); } }
-
-    .fade-up {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 600ms var(--ease-reveal) forwards;
-    }
-    .fade-up.d1 { animation-delay: 0.2s; }
-    .fade-up.d2 { animation-delay: 0.4s; }
-    .fade-up.d3 { animation-delay: 0.6s; }
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .footer-text span { color: var(--yellow); font-weight: 700; }
 
     /* ── Responsive ─────────────────────────────────────── */
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; }
-      .hero-right { border-left: none; border-top: 1.5px solid var(--border); padding: 24px 0 0; margin-top: 32px; flex-direction: row; gap: 0; }
-      .hero-stat { flex: 1; padding: 16px; border-bottom: none; border-right: 1px solid var(--ink-3); }
-      .hero-stat:last-child { border-right: none; }
-      .tool-grid { grid-template-columns: 1fr; }
-      .input-panel { border-right: none; border-bottom: 1.5px solid var(--border); }
-      .bottom-strip { grid-template-columns: 1fr; }
-      .recs-panel { border-right: none; border-bottom: 1.5px solid var(--border); }
+      .hero-stats { flex-direction: row; flex-wrap: wrap; }
+      .tool-grid  { grid-template-columns: 1fr; }
+      .bottom-grid{ grid-template-columns: 1fr; }
+      .factor-row { grid-template-columns: repeat(3,1fr); }
     }
   </style>
 </head>
@@ -698,271 +664,267 @@
   <!-- ── NAV ── -->
   <nav>
     <a href="#" class="nav-logo">
-      <div class="logo-sq">SS</div>
+      <div class="logo-box">SS</div>
       ShelfSense
     </a>
-
   </nav>
 
   <!-- ── HERO ── -->
   <section class="hero">
     <div class="hero-left">
-
-      <!-- Echo Effect -->
-      <div class="echo-wrap" style="margin-bottom: 52px;">
-        <span class="echo-layer e4">ShelfSense</span>
-        <span class="echo-layer e3">ShelfSense</span>
-        <span class="echo-layer e2">ShelfSense</span>
-        <span class="echo-layer e1">ShelfSense</span>
-        <span class="echo-layer e0 reveal">ShelfSense</span>
-      </div>
-
-      <p class="hero-sub fade-up d1">
-        Predictive shelf life modelling for food exporters. Input your formulation — get an Arrhenius-calibrated shelf life curve, failure risk score, and market-specific compliance guidance. Instantly.
+      <h1 class="hero-headline">
+        Predict<br><em>Shelf Life.</em><br>Export Smarter.
+      </h1>
+      <p class="hero-sub">
+        Arrhenius-calibrated shelf life modelling for food exporters. Input your formulation — get a failure risk score, decay curve, and market-specific compliance guidance. Instantly.
       </p>
-
-      <div class="hero-actions fade-up d2">
-        <button class="btn-primary" onclick="document.getElementById('tool').scrollIntoView({behavior:'smooth'})">
-          <span>Run Prediction</span>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="document.getElementById('tool').scrollIntoView({behavior:'smooth'})">
+          ↓ Run Prediction
         </button>
-        <button class="btn-ghost">Read the methodology →</button>
+        <button class="btn btn-outline">Read the Science →</button>
       </div>
-
     </div>
 
-    <div class="hero-right fade-up d3">
+    <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-val">2,847</div>
-        <div class="hero-stat-label">Products Analysed</div>
+        <div class="stat-val">2,847</div>
+        <div class="stat-label">Products Analysed</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val">94.2%</div>
-        <div class="hero-stat-label">Model Accuracy</div>
+        <div class="stat-val">94.2%</div>
+        <div class="stat-label">Model Accuracy</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val">38%</div>
-        <div class="hero-stat-label">Spoilage Reduction</div>
+        <div class="stat-val">38%</div>
+        <div class="stat-label">Spoilage Reduced</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val">18</div>
-        <div class="hero-stat-label">Markets Covered</div>
+        <div class="stat-val">18</div>
+        <div class="stat-label">Markets Covered</div>
       </div>
     </div>
   </section>
 
-  <!-- ── SECTION HEAD ── -->
-  <div class="section-head" id="tool">
-    <span class="section-label">Prediction Engine</span>
-    <span class="section-num">01 / 02</span>
-  </div>
+  <!-- ── TOOL ── -->
+  <section class="tool-section" id="tool">
 
-  <!-- ── TOOL GRID ── -->
-  <div class="tool-grid">
-
-    <!-- Input Panel -->
-    <div class="input-panel">
-      <div class="panel-title">Formulation<br>Parameters</div>
-
-      <div class="field-group">
-        <label class="field-label">Product Name</label>
-        <input type="text" class="field-input" id="productName" value="Mango Chutney" placeholder="e.g. Tomato Paste">
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Packaging Type</label>
-        <select class="field-input" id="packaging" onchange="predict()">
-          <option value="glass">Glass Jar (Hermetic)</option>
-          <option value="pet">PET Bottle</option>
-          <option value="retort" selected>Retort Pouch</option>
-          <option value="tin">Tin Can</option>
-          <option value="modified">Modified Atmosphere</option>
-        </select>
-      </div>
-
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label">pH Level</label>
-          <input type="number" class="field-input" id="pH" value="3.8" step="0.1" min="2" max="8" oninput="predict()">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Sugar (°Brix)</label>
-          <input type="number" class="field-input" id="brix" value="42" step="0.5" min="0" max="100" oninput="predict()">
-        </div>
-      </div>
-
-      <div class="range-group">
-        <div class="range-top">
-          <label class="field-label" style="margin:0">Water Activity (Aᵥᵥ)</label>
-          <span class="range-val-display" id="awDisplay">0.82</span>
-        </div>
-        <input type="range" id="aw" min="0.5" max="0.99" step="0.01" value="0.82"
-               oninput="document.getElementById('awDisplay').textContent=parseFloat(this.value).toFixed(2); predict()">
-      </div>
-
-      <div class="range-group">
-        <div class="range-top">
-          <label class="field-label" style="margin:0">Storage Temp (°C)</label>
-          <span class="range-val-display" id="tempDisplay">25°C</span>
-        </div>
-        <input type="range" id="temp" min="0" max="45" step="1" value="25"
-               oninput="document.getElementById('tempDisplay').textContent=this.value+'°C'; predict()">
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Destination Market</label>
-        <select class="field-input" id="market" onchange="predict()">
-          <option value="eu">European Union</option>
-          <option value="us" selected>United States</option>
-          <option value="gcc">Gulf (GCC)</option>
-          <option value="sea">Southeast Asia</option>
-          <option value="uk">United Kingdom</option>
-        </select>
-      </div>
-
-      <button class="run-btn" onclick="predict()"><span>— Run Prediction</span></button>
+    <div style="margin-bottom: 24px;">
+      <span class="section-tag">⬡ Prediction Engine</span>
     </div>
 
-    <!-- Output Panel -->
-    <div class="output-panel">
+    <div class="tool-grid">
 
-      <!-- Result Header -->
-      <div class="result-header">
-        <div>
-          <div class="result-days-label">Predicted Shelf Life</div>
+      <!-- Input Card -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-head-title">Formulation Parameters</span>
+          <span class="card-head-badge">Arrhenius / Q10</span>
+        </div>
+        <div class="card-body">
+
+          <div class="field">
+            <label class="field-label">Product Name</label>
+            <input type="text" class="field-input" id="productName" value="Mango Chutney" placeholder="e.g. Tomato Paste">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Packaging Type</label>
+            <select class="field-input" id="packaging" onchange="predict()">
+              <option value="glass">Glass Jar (Hermetic)</option>
+              <option value="pet">PET Bottle</option>
+              <option value="retort" selected>Retort Pouch</option>
+              <option value="tin">Tin Can</option>
+              <option value="modified">Modified Atmosphere</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">pH Level</label>
+              <input type="number" class="field-input" id="pH" value="3.8" step="0.1" min="2" max="8" oninput="predict()">
+            </div>
+            <div class="field">
+              <label class="field-label">Sugar (°Brix)</label>
+              <input type="number" class="field-input" id="brix" value="42" step="0.5" min="0" max="100" oninput="predict()">
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:24px;">
+            <div class="range-head">
+              <label class="field-label" style="margin:0">Water Activity (Aᵥᵥ)</label>
+              <span class="range-val" id="awDisplay">0.82</span>
+            </div>
+            <input type="range" id="aw" min="0.5" max="0.99" step="0.01" value="0.82"
+                   oninput="document.getElementById('awDisplay').textContent=parseFloat(this.value).toFixed(2); predict()">
+          </div>
+
+          <div class="field" style="margin-bottom:24px;">
+            <div class="range-head">
+              <label class="field-label" style="margin:0">Storage Temp (°C)</label>
+              <span class="range-val" id="tempDisplay">25°C</span>
+            </div>
+            <input type="range" id="temp" min="0" max="45" step="1" value="25"
+                   oninput="document.getElementById('tempDisplay').textContent=this.value+'°C'; predict()">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Destination Market</label>
+            <select class="field-input" id="market" onchange="predict()">
+              <option value="eu">European Union</option>
+              <option value="us" selected>United States</option>
+              <option value="gcc">Gulf (GCC)</option>
+              <option value="sea">Southeast Asia</option>
+              <option value="uk">United Kingdom</option>
+            </select>
+          </div>
+
+          <button class="run-btn" onclick="predict()">⚡ Run Prediction</button>
+        </div>
+      </div>
+
+      <!-- Output Card -->
+      <div class="output-card">
+
+        <!-- Result Hero -->
+        <div class="result-hero">
           <div>
-            <span class="result-days-val" id="shelfDays">284</span>
-            <span class="result-days-unit">days</span>
+            <div class="result-days-label">Predicted Shelf Life</div>
+            <div class="result-days" id="shelfDays">284<sub>days</sub></div>
+          </div>
+          <span class="risk-badge low" id="riskBadge">✓ Low Risk</span>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-zone">
+          <svg class="neo-chart" viewBox="0 0 640 160" id="chart">
+            <defs>
+              <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#ffe17c" stroke-width="2"/>
+              </pattern>
+            </defs>
+
+            <!-- Grid lines -->
+            <line x1="0" y1="30"  x2="640" y2="30"  stroke="#e0e0e0" stroke-width="1"/>
+            <line x1="0" y1="75"  x2="640" y2="75"  stroke="#e0e0e0" stroke-width="1"/>
+            <line x1="0" y1="120" x2="640" y2="120" stroke="#e0e0e0" stroke-width="1"/>
+
+            <!-- Threshold -->
+            <rect x="0" y="128" width="640" height="16" fill="url(#hatch)" opacity="0.5"/>
+            <line x1="0" y1="128" x2="640" y2="128" stroke="#000" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="4" y="123" fill="#888" font-size="9" font-family="'Satoshi',sans-serif" font-weight="700" letter-spacing="0.05em">SPOILAGE THRESHOLD</text>
+
+            <!-- Y labels -->
+            <text x="0"   y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500">0</text>
+            <text x="144" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL1">60d</text>
+            <text x="300" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL2">120d</text>
+            <text x="456" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL3">180d</text>
+            <text x="608" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL4">240d</text>
+
+            <!-- Area fill -->
+            <path id="areaPath" fill="#ffe17c" opacity="0.3"/>
+            <!-- Line -->
+            <path id="curvePath" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="square"/>
+
+            <!-- Square data dots -->
+            <rect id="d1" width="8" height="8" fill="#ffe17c" stroke="#000" stroke-width="2"/>
+            <rect id="d2" width="8" height="8" fill="#ffe17c" stroke="#000" stroke-width="2"/>
+            <rect id="d3" width="8" height="8" fill="#ffe17c" stroke="#000" stroke-width="2"/>
+
+            <!-- End marker -->
+            <rect id="endDot" width="12" height="12" fill="#171e19" stroke="#000" stroke-width="2"/>
+            <text id="endLabel" fill="#000" font-size="11" font-family="'Cabinet Grotesk',sans-serif" font-weight="800" dy="-10" text-anchor="middle"/>
+          </svg>
+        </div>
+
+        <!-- Factor Row -->
+        <div class="factor-row">
+          <div class="factor-cell">
+            <div class="fc-label">Water Activity</div>
+            <div class="fc-val" id="factorAw">0.82</div>
+          </div>
+          <div class="factor-cell" style="border-right: var(--border);">
+            <div class="fc-label">pH Level</div>
+            <div class="fc-val" id="factorPH">3.8</div>
+          </div>
+          <div class="factor-cell">
+            <div class="fc-label">Temperature</div>
+            <div class="fc-val" id="factorTemp">25°C</div>
           </div>
         </div>
-        <span class="risk-tag low" id="riskTag">Low Risk</span>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BOTTOM PANELS ── -->
+  <section class="bottom-section">
+
+    <div style="margin-bottom: 24px; padding-top: 8px;">
+      <span class="section-tag">⬡ Analysis &amp; Monitoring</span>
+    </div>
+
+    <div class="bottom-grid">
+
+      <!-- Recs -->
+      <div class="panel-card">
+        <div class="panel-head">
+          <span class="panel-title">Recommendations</span>
+          <span class="panel-count" id="recCount">02 ITEMS</span>
+        </div>
+        <div id="recList"></div>
       </div>
 
-      <!-- Chart -->
-      <div class="chart-wrap">
-        <svg class="main-chart" viewBox="0 0 680 160" id="chart">
-          <defs>
-            <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#111111" stop-opacity="0.08"/>
-              <stop offset="100%" stop-color="#111111" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-
-          <!-- Grid -->
-          <line x1="0" y1="40"  x2="680" y2="40"  stroke="#e0e0e0" stroke-width="1"/>
-          <line x1="0" y1="80"  x2="680" y2="80"  stroke="#e0e0e0" stroke-width="1"/>
-          <line x1="0" y1="120" x2="680" y2="120" stroke="#e0e0e0" stroke-width="1"/>
-
-          <!-- Threshold line -->
-          <line x1="0" y1="130" x2="680" y2="130" stroke="#b6b5b5" stroke-width="1" stroke-dasharray="4 4"/>
-          <text x="4" y="126" fill="#b6b5b5" font-size="9" font-family="'Satoshi', sans-serif" font-weight="500" letter-spacing="0.05em" text-transform="uppercase">SPOILAGE THRESHOLD</text>
-
-          <!-- Axis labels -->
-          <text x="0"   y="155" fill="#b6b5b5" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500">0</text>
-          <text x="154" y="155" fill="#b6b5b5" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500" id="xL1">60d</text>
-          <text x="318" y="155" fill="#b6b5b5" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500" id="xL2">120d</text>
-          <text x="482" y="155" fill="#b6b5b5" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500" id="xL3">180d</text>
-          <text x="650" y="155" fill="#b6b5b5" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500" id="xL4">240d</text>
-
-          <!-- Y labels -->
-          <text x="-4" y="44"  fill="#b6b5b5" font-size="9" font-family="'Satoshi',sans-serif" text-anchor="end">100%</text>
-          <text x="-4" y="84"  fill="#b6b5b5" font-size="9" font-family="'Satoshi',sans-serif" text-anchor="end">50%</text>
-          <text x="-4" y="124" fill="#b6b5b5" font-size="9" font-family="'Satoshi',sans-serif" text-anchor="end">20%</text>
-
-          <!-- Fill -->
-          <path id="areaPath" fill="url(#fillGrad)"/>
-          <!-- Line -->
-          <path id="curvePath" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-
-          <!-- Study dots (square for Swiss style) -->
-          <rect id="d1" width="6" height="6" fill="#f2f2f2" stroke="#111111" stroke-width="1.5"/>
-          <rect id="d2" width="6" height="6" fill="#f2f2f2" stroke="#111111" stroke-width="1.5"/>
-          <rect id="d3" width="6" height="6" fill="#f2f2f2" stroke="#111111" stroke-width="1.5"/>
-
-          <!-- End marker -->
-          <rect id="endDot" width="10" height="10" fill="#111111"/>
-          <text id="endLabel" fill="#111111" font-size="10" font-family="'Satoshi',sans-serif" font-weight="700" dy="-8" text-anchor="middle"/>
-        </svg>
-      </div>
-
-      <!-- Factor Grid -->
-      <div class="factor-grid">
-        <div class="factor-cell">
-          <div class="factor-name">Water Activity</div>
-          <div class="factor-score" id="factorAw">0.82</div>
+      <!-- Shipments -->
+      <div class="panel-card">
+        <div class="panel-head">
+          <span class="panel-title">Live Shipments</span>
+          <span class="panel-count">04 ACTIVE</span>
         </div>
-        <div class="factor-cell">
-          <div class="factor-name">pH Level</div>
-          <div class="factor-score" id="factorPH">3.8</div>
+        <div class="ship-item">
+          <div class="ship-dot"></div>
+          <div>
+            <div class="ship-name">Mango Chutney — Dubai Port</div>
+            <div class="ship-meta">22°C · 58% RH · Day 12 / 180</div>
+          </div>
+          <span class="ship-tag ok">On Track</span>
         </div>
-        <div class="factor-cell">
-          <div class="factor-name">Temperature</div>
-          <div class="factor-score" id="factorTemp">25°C</div>
+        <div class="ship-item">
+          <div class="ship-dot warn"></div>
+          <div>
+            <div class="ship-name">Tomato Paste — Rotterdam</div>
+            <div class="ship-meta">31°C · 74% RH · Day 45 / 365</div>
+          </div>
+          <span class="ship-tag mon">Monitor</span>
+        </div>
+        <div class="ship-item">
+          <div class="ship-dot crit"></div>
+          <div>
+            <div class="ship-name">Dried Shrimp — LA Customs</div>
+            <div class="ship-meta">38°C · 82% RH · Day 78 / 120</div>
+          </div>
+          <span class="ship-tag alert">⚠ Alert</span>
+        </div>
+        <div class="ship-item">
+          <div class="ship-dot"></div>
+          <div>
+            <div class="ship-name">Coconut Oil — Singapore</div>
+            <div class="ship-meta">28°C · 65% RH · Day 5 / 540</div>
+          </div>
+          <span class="ship-tag ok">On Track</span>
         </div>
       </div>
 
     </div>
-  </div>
-
-  <!-- ── BOTTOM STRIP ── -->
-  <div class="section-head" style="border-top: 1.5px solid var(--border);">
-    <span class="section-label">Analysis &amp; Monitoring</span>
-    <span class="section-num">02 / 02</span>
-  </div>
-
-  <div class="bottom-strip">
-
-    <!-- Recommendations -->
-    <div class="recs-panel">
-      <div class="strip-title">Recommendations</div>
-      <div id="recList"></div>
-    </div>
-
-    <!-- Shipment Tracker -->
-    <div class="shipments-panel">
-      <div class="strip-title">Live Shipments</div>
-      <div class="shipment-row">
-        <div class="ship-indicator"></div>
-        <div>
-          <div class="ship-name">Mango Chutney — Dubai Port</div>
-          <div class="ship-meta">22°C · 58% RH · Day 12 / 180</div>
-        </div>
-        <span class="ship-status active">On Track</span>
-      </div>
-      <div class="shipment-row">
-        <div class="ship-indicator warn"></div>
-        <div>
-          <div class="ship-name">Tomato Paste — Rotterdam</div>
-          <div class="ship-meta">31°C · 74% RH · Day 45 / 365</div>
-        </div>
-        <span class="ship-status">Monitor</span>
-      </div>
-      <div class="shipment-row">
-        <div class="ship-indicator crit"></div>
-        <div>
-          <div class="ship-name">Dried Shrimp — LA Customs</div>
-          <div class="ship-meta">38°C · 82% RH · Day 78 / 120</div>
-        </div>
-        <span class="ship-status alert">⚠ Alert</span>
-      </div>
-      <div class="shipment-row">
-        <div class="ship-indicator"></div>
-        <div>
-          <div class="ship-name">Coconut Oil — Singapore</div>
-          <div class="ship-meta">28°C · 65% RH · Day 5 / 540</div>
-        </div>
-        <span class="ship-status active">On Track</span>
-      </div>
-    </div>
-  </div>
+  </section>
 
   <!-- ── FOOTER ── -->
   <footer>
-    <div class="footer-copy">© 2026 <span>ShelfSense</span> — Built for food engineers, by food engineers.</div>
-    <div class="footer-copy">v2.4.1 · Arrhenius / Q10 Model</div>
+    <div class="footer-text">© 2026 <span>ShelfSense</span> — Built for food engineers.</div>
+    <div class="footer-text">v2.4.1 · Arrhenius / Q10 Model</div>
   </footer>
 
 <script>
-  /* ── Prediction Engine ──────────────────────────────── */
   function predict() {
     const aw   = parseFloat(document.getElementById('aw').value);
     const temp = parseFloat(document.getElementById('temp').value);
@@ -970,44 +932,31 @@
     const pkg  = document.getElementById('packaging').value;
     const mkt  = document.getElementById('market').value;
 
-    // Base from packaging
     const pkgBase = { glass:540, tin:480, retort:360, pet:220, modified:180 };
     let days = pkgBase[pkg] || 300;
 
-    // Aw factor
     const awFactor = 1 - Math.pow((aw - 0.5) / 0.5, 1.8);
     days *= 0.3 + 0.7 * awFactor;
 
-    // pH factor
     const phFactor = pH < 4.6 ? 1.3 - (pH - 2) * 0.05 : 1 - (pH - 4.6) * 0.12;
     days *= phFactor;
 
-    // Arrhenius Q10
     days *= Math.pow(2, -(temp - 25) / 10);
 
-    // Market buffer
     const mktBuffer = { eu:0.85, us:0.90, gcc:0.92, sea:0.95, uk:0.87 };
     days *= mktBuffer[mkt] || 0.9;
     days = Math.max(30, Math.round(days));
 
-    // Risk
-    let risk, riskClass;
-    if      (days > 180) { risk = 'Low Risk';    riskClass = 'low'; }
-    else if (days > 90)  { risk = 'Medium Risk'; riskClass = 'medium'; }
-    else                 { risk = 'High Risk';   riskClass = 'high'; }
+    let risk, riskClass, riskIcon;
+    if      (days > 180) { risk = 'Low Risk';    riskClass = 'low';    riskIcon = '✓'; }
+    else if (days > 90)  { risk = 'Medium Risk'; riskClass = 'medium'; riskIcon = '⚠'; }
+    else                 { risk = 'High Risk';   riskClass = 'high';   riskIcon = '✕'; }
 
-    // Update output
-    const daysEl = document.getElementById('shelfDays');
-    daysEl.textContent = days;
-    daysEl.style.clipPath = 'inset(0 100% 0 0)';
-    requestAnimationFrame(() => {
-      daysEl.style.transition = `clip-path 700ms cubic-bezier(0.77,0,0.175,1)`;
-      daysEl.style.clipPath = 'inset(0 0% 0 0)';
-    });
+    document.getElementById('shelfDays').innerHTML = `${days}<sub>days</sub>`;
 
-    const tag = document.getElementById('riskTag');
-    tag.textContent = risk;
-    tag.className   = 'risk-tag ' + riskClass;
+    const badge = document.getElementById('riskBadge');
+    badge.textContent = riskIcon + ' ' + risk;
+    badge.className   = 'risk-badge ' + riskClass;
 
     document.getElementById('factorAw').textContent   = aw.toFixed(2);
     document.getElementById('factorPH').textContent   = pH;
@@ -1018,7 +967,7 @@
   }
 
   function drawCurve(days) {
-    const W = 680, H = 130;
+    const W = 640, H = 128;
     const maxDays = Math.max(days * 1.15, 100);
     const k = Math.log(5) / days;
 
@@ -1027,34 +976,33 @@
       const t = (i / 80) * maxDays;
       const x = (t / maxDays) * W;
       const q = Math.exp(-k * t);
-      const y = H - (q * (H - 30)) - 5;
+      const y = H - (q * (H - 28)) - 4;
       pts.push([x, y]);
     }
 
-    const d = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const d = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
     document.getElementById('curvePath').setAttribute('d', d);
-    document.getElementById('areaPath').setAttribute('d', d + ` L${W},${H+10} L0,${H+10} Z`);
+    document.getElementById('areaPath').setAttribute('d', d + ` L${W},${H} L0,${H} Z`);
 
-    // End marker (square dot)
+    // End dot
     const ex = (days / maxDays) * W;
-    const ey = H - (Math.exp(-k * days) * (H - 30)) - 5;
-    const endDot = document.getElementById('endDot');
-    endDot.setAttribute('x', ex - 5); endDot.setAttribute('y', ey - 5);
-    const endLbl = document.getElementById('endLabel');
-    endLbl.setAttribute('x', ex); endLbl.setAttribute('y', ey);
-    endLbl.textContent = days + 'd';
+    const ey = H - (Math.exp(-k * days) * (H - 28)) - 4;
+    const ed = document.getElementById('endDot');
+    ed.setAttribute('x', ex - 6); ed.setAttribute('y', ey - 6);
+    const el = document.getElementById('endLabel');
+    el.setAttribute('x', ex); el.setAttribute('y', ey);
+    el.textContent = days + 'd';
 
-    // Study dots (squares)
+    // Study dots
     [0.2, 0.45, 0.75].forEach((frac, i) => {
       const t = frac * maxDays;
       const q = Math.exp(-k * t);
-      const sx = frac * W - 3;
-      const sy = H - (q * (H - 30)) - 5 - 3;
-      const el = document.getElementById(['d1','d2','d3'][i]);
-      el.setAttribute('x', sx); el.setAttribute('y', sy);
+      const sx = frac * W - 4;
+      const sy = H - (q * (H - 28)) - 4 - 4;
+      document.getElementById(['d1','d2','d3'][i]).setAttribute('x', sx);
+      document.getElementById(['d1','d2','d3'][i]).setAttribute('y', sy);
     });
 
-    // X-axis labels
     const step = Math.round(maxDays / 4 / 10) * 10;
     ['xL1','xL2','xL3','xL4'].forEach((id, i) => {
       document.getElementById(id).textContent = (step*(i+1)) + 'd';
@@ -1063,22 +1011,24 @@
 
   function buildRecs(aw, pH, temp, pkg, days, risk) {
     const items = [];
-    if (aw > 0.85) items.push(`<strong>Critical —</strong> Water activity ${aw.toFixed(2)} exceeds safety threshold. Add humectants (glycerol, sorbitol) or upgrade moisture barrier.`);
-    if (pH > 4.6)  items.push(`<strong>Formulation —</strong> pH ${pH} above 4.6. Product is not classified as acidified food. Acidification required for low-temperature shelf stability.`);
-    if (temp > 30) items.push(`<strong>Logistics —</strong> ${temp}°C storage reduces shelf life by ~${Math.round((1-Math.pow(2,-(temp-25)/10))*100)}%. Cold-chain transport recommended.`);
-    if (pkg === 'pet' && days < 150) items.push(`<strong>Packaging —</strong> Switch from PET to retort pouch or glass jar for +60–120 days additional shelf life.`);
+    if (aw > 0.85)  items.push(`<strong>Critical —</strong> Aᵥᵥ ${aw.toFixed(2)} exceeds safe threshold. Add humectants (glycerol, sorbitol) or upgrade moisture barrier packaging.`);
+    if (pH > 4.6)   items.push(`<strong>Formulation —</strong> pH ${pH} is above 4.6. Not classified as acidified food. Add citric acid to reach safe Aw-pH combination.`);
+    if (temp > 30)  items.push(`<strong>Logistics —</strong> ${temp}°C reduces shelf life by ~${Math.round((1-Math.pow(2,-(temp-25)/10))*100)}%. Cold-chain shipping required.`);
+    if (pkg === 'pet' && days < 150) items.push(`<strong>Packaging —</strong> Upgrade from PET to retort pouch or glass jar for +60–120 additional days.`);
     if (days > 180) items.push(`<strong>Compliance —</strong> Product qualifies for all target markets. Validate with ASLT at 40°C / 75% RH for 12 weeks.`);
-    if (items.length === 0) items.push(`<strong>Stable —</strong> Formulation parameters within safe operating range. Proceed to accelerated shelf life validation study.`);
+    if (items.length === 0) items.push(`<strong>Stable —</strong> All parameters within safe range. Proceed to accelerated shelf life validation study (ASLT).`);
+
+    document.getElementById('recCount').textContent =
+      String(items.length).padStart(2,'0') + ' ITEM' + (items.length !== 1 ? 'S' : '');
 
     document.getElementById('recList').innerHTML = items.map((txt, i) =>
-      `<div class="rec-row">
-        <span class="rec-num">0${i+1}</span>
-        <span class="rec-text">${txt}</span>
+      `<div class="rec-item">
+        <div class="rec-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="rec-text">${txt}</div>
       </div>`
     ).join('');
   }
 
-  // Init
   predict();
 </script>
 </body>
