@@ -1003,19 +1003,309 @@
       gap: 16px;
     }
 
-    .footer-left {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: 1.15rem;
-      letter-spacing: -0.04em;
-      color: var(--primary);
+    /* --- Mobile & Tablet Responsive Media Queries --- */
+    @media (max-width: 768px) {
+      body {
+        padding: 0 0 40px 0;
+      }
+
+      nav {
+        padding: 12px 16px;
+      }
+
+      .nav-logo .logo-text {
+        font-size: 1.25rem;
+      }
+
+      .nav-logo .logo-badge {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+      }
+
+      .nav-right-group {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 4px;
+      }
+
+      .nav-tag {
+        font-size: 0.65rem;
+        padding: 4px 10px;
+      }
+
+      .container {
+        margin-top: 18px;
+        padding: 0 12px;
+      }
+
+      .hero-card {
+        padding: 28px 18px;
+        margin-bottom: 24px;
+        box-shadow: 4px 4px 0px 0px var(--border-color);
+      }
+
+      .hero-eyebrow {
+        font-size: 0.68rem;
+        padding: 4px 10px;
+        margin-bottom: 16px;
+      }
+
+      .hero-headline {
+        font-size: clamp(2.1rem, 8.5vw, 3.2rem);
+        line-height: 1.0;
+        margin-bottom: 16px;
+      }
+
+      .hero-description {
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 24px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 13px 18px;
+      }
+
+      .hero-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .stat-box {
+        padding: 14px 12px;
+        box-shadow: 2px 2px 0px 0px #000;
+      }
+
+      .stat-number {
+        font-size: 1.7rem;
+      }
+
+      .stat-label {
+        font-size: 0.64rem;
+      }
+
+      .section-divider {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin: 32px 0 16px;
+      }
+
+      .section-title-badge {
+        font-size: 0.95rem;
+        text-align: center;
+        width: 100%;
+        padding: 8px 12px;
+      }
+
+      .mode-switcher {
+        width: 100%;
+      }
+
+      .mode-tab {
+        flex: 1;
+        text-align: center;
+        font-size: 0.72rem;
+        padding: 10px 4px;
+      }
+
+      .neo-card {
+        box-shadow: 4px 4px 0px 0px var(--border-color);
+      }
+
+      .neo-card-header {
+        padding: 14px 16px;
+      }
+
+      .neo-card-body {
+        padding: 18px 14px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .form-input, .form-select {
+        font-size: 16px; /* Prevents auto-zoom on iOS */
+        padding: 11px 12px;
+      }
+
+      .output-hero {
+        padding: 22px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .output-days-big {
+        font-size: 4rem;
+      }
+
+      .risk-sticker {
+        width: 100%;
+        text-align: center;
+        padding: 8px 14px;
+        font-size: 0.95rem;
+      }
+
+      .chart-container {
+        padding: 18px 14px;
+      }
+
+      .factors-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .factor-item {
+        border-right: none;
+        border-bottom: var(--border-2px);
+        padding: 14px 16px;
+      }
+
+      .factor-item:last-child {
+        border-bottom: none;
+      }
+
+      .output-action-bar {
+        padding: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 12px;
+      }
+
+      .output-action-bar .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .calculator-section {
+        margin-top: 36px;
+      }
+
+      .roi-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .roi-results-box {
+        padding: 20px 16px;
+        box-shadow: 4px 4px 0px 0px var(--border-color);
+      }
+
+      .roi-stat-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .roi-metric-num {
+        font-size: 1.7rem;
+      }
+
+      .roi-net-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+      }
+
+      .roi-net-banner .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .roi-net-val {
+        font-size: 1.8rem;
+      }
+
+      .modal-backdrop {
+        padding: 10px;
+        align-items: flex-start;
+      }
+
+      .certificate-container {
+        padding: 22px 14px;
+        margin: 10px auto;
+        box-shadow: 6px 6px 0px 0px #000;
+        max-height: 94vh;
+        overflow-y: auto;
+      }
+
+      .cert-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .cert-title-big {
+        font-size: 1.35rem;
+      }
+
+      .cert-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .cert-table-scroll {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 16px;
+      }
+
+      .cert-microbial-table {
+        min-width: 480px;
+      }
+
+      .cert-footer-stamp {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 14px;
+      }
+
+      .stamp-box {
+        text-align: center;
+      }
+
+      .signature-area {
+        text-align: center;
+      }
+
+      .cert-actions {
+        flex-direction: column;
+      }
+
+      .cert-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      footer {
+        padding: 18px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        box-shadow: 4px 4px 0px 0px var(--border-color);
+      }
     }
 
-    .footer-right {
-      font-family: var(--font-body);
-      font-size: 0.8rem;
-      color: var(--accent);
-      font-weight: 500;
+    @media (max-width: 400px) {
+      .hero-stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .output-days-big {
+        font-size: 3.2rem;
+      }
     }
   </style>
 </head>
@@ -1473,33 +1763,35 @@
         </div>
       </div>
 
-      <!-- Microbial & Quality Criteria Table -->
-      <table class="cert-microbial-table">
-        <thead>
-          <tr>
-            <th>Hazard Evaluation Parameter</th>
-            <th>Observed Kinetic Threshold</th>
-            <th>Compliance Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Clostridium botulinum Outgrowth</strong></td>
-            <td>pH &le; 4.60 (Acidified food limit)</td>
-            <td><strong style="color:#0a5c36;">&check; PASS (Inhibited)</strong></td>
-          </tr>
-          <tr>
-            <td><strong>Staphylococcus aureus Enterotoxin</strong></td>
-            <td>Water Activity (Aw) &le; 0.85</td>
-            <td><strong style="color:#0a5c36;">&check; PASS (Suppressed)</strong></td>
-          </tr>
-          <tr>
-            <td><strong>Lipid / Color Maillard Rate</strong></td>
-            <td>Arrhenius Q10 = 2.0 at 25&deg;C</td>
-            <td><strong style="color:#0a5c36;">&check; VERIFIED (Stable)</strong></td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Microbial & Quality Criteria Table (Responsive Scroll on Mobile) -->
+      <div class="cert-table-scroll">
+        <table class="cert-microbial-table">
+          <thead>
+            <tr>
+              <th>Hazard Evaluation Parameter</th>
+              <th>Observed Kinetic Threshold</th>
+              <th>Compliance Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Clostridium botulinum Outgrowth</strong></td>
+              <td>pH &le; 4.60 (Acidified food limit)</td>
+              <td><strong style="color:#0a5c36;">&check; PASS (Inhibited)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Staphylococcus aureus Enterotoxin</strong></td>
+              <td>Water Activity (Aw) &le; 0.85</td>
+              <td><strong style="color:#0a5c36;">&check; PASS (Suppressed)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Lipid / Color Maillard Rate</strong></td>
+              <td>Arrhenius Q10 = 2.0 at 25&deg;C</td>
+              <td><strong style="color:#0a5c36;">&check; VERIFIED (Stable)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Footer Stamp & Signature Block -->
       <div class="cert-footer-stamp">
