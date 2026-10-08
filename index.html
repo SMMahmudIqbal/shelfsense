@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShelfSense — Predictive Shelf Life Engine</title>
+  <style>
+    /* ── Reset & Base ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Theme Variables ────────────────────────────────── */
+    :root {
+      --accent-green: #00e5a0;
+      --accent-yellow: #ffd166;
+      --accent-red: #ff6b6b;
+      --accent-blue: #4cc9f0;
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    [data-theme="dark"] {
+      --glass-bg: rgba(255,255,255,0.10);
+      --glass-border: rgba(255,255,255,0.25);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.30);
+      --blur: blur(16px);
+      --text: #f0f4ff;
+      --text-muted: rgba(240,244,255,0.6);
+      --bg-from: #0a0e27;
+      --bg-mid: #0d1b4b;
+      --bg-end: #1a0a2e;
+      --blob1: #00e5a0;
+      --blob2: #4361ee;
+      --input-bg: rgba(255,255,255,0.07);
+      --input-focus: rgba(255,255,255,0.12);
+      --chip-bg: rgba(255,255,255,0.06);
+      --chip-border: rgba(255,255,255,0.12);
+      --rec-bg: rgba(255,255,255,0.05);
+      --rec-border: rgba(255,255,255,0.10);
+      --rec-hover: rgba(255,255,255,0.09);
+      --grid-line: rgba(255,255,255,0.06);
+      --axis-text: rgba(240,244,255,0.45);
+      --toggle-icon: "☀️";
+      --toggle-label: "Light Mode";
+    }
+
+    [data-theme="light"] {
+      --glass-bg: rgba(255,255,255,0.55);
+      --glass-border: rgba(255,255,255,0.80);
+      --glass-shadow: 0 8px 32px rgba(100,120,180,0.18);
+      --blur: blur(20px);
+      --text: #0d1b4b;
+      --text-muted: rgba(13,27,75,0.55);
+      --bg-from: #c8f4ea;
+      --bg-mid: #ddeeff;
+      --bg-end: #f0eaff;
+      --blob1: #00c98a;
+      --blob2: #7b9ef8;
+      --input-bg: rgba(255,255,255,0.6);
+      --input-focus: rgba(255,255,255,0.85);
+      --chip-bg: rgba(255,255,255,0.45);
+      --chip-border: rgba(0,0,0,0.08);
+      --rec-bg: rgba(255,255,255,0.45);
+      --rec-border: rgba(0,0,0,0.07);
+      --rec-hover: rgba(255,255,255,0.75);
+      --grid-line: rgba(0,0,0,0.07);
+      --axis-text: rgba(13,27,75,0.45);
+      --toggle-icon: "🌙";
+      --toggle-label: "Dark Mode";
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      transition: color 0.35s ease;
+    }
+
+    /* ── Animated Gradient Background ──────────────────── */
+    body {
+      background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+      background-size: 400% 400%;
+      animation: bgShift 12s ease infinite;
+      min-height: 100vh;
+      transition: background 0.5s ease;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* floating blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      transition: background 0.5s ease, opacity 0.5s ease;
+    }
+    [data-theme="dark"] body::before, [data-theme="dark"] body::after { opacity: 0.35; }
+    [data-theme="light"] body::before, [data-theme="light"] body::after { opacity: 0.28; }
+
+    body::before {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, var(--blob1), transparent 70%);
+      top: -100px; left: -100px;
+      animation: floatA 14s ease-in-out infinite;
+    }
+    body::after {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--blob2), transparent 70%);
+      bottom: -150px; right: -150px;
+      animation: floatB 18s ease-in-out infinite;
+    }
+    @keyframes floatA {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(80px, 60px) scale(1.15); }
+    }
+    @keyframes floatB {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-60px, -80px) scale(1.1); }
+    }
+
+    /* ── Glass Mixin ────────────────────────────────────── */
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      box-shadow: var(--glass-shadow);
+      transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo { display: flex; align-items: center; gap: 12px; }
+
+    .logo-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent-green), #00b4d8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 0 24px rgba(0,229,160,0.4);
+    }
+
+    .logo-text h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, var(--text), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-text p { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.5px; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    /* ── Theme Toggle ───────────────────────────────────── */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.25s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .theme-toggle:hover {
+      background: rgba(255,255,255,0.18);
+      transform: scale(1.04);
+    }
+    .theme-toggle:active { transform: scale(0.97); }
+
+    .toggle-track {
+      width: 36px; height: 20px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+      position: relative;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"]  .toggle-track { background: rgba(255,255,255,0.18); }
+    [data-theme="light"] .toggle-track { background: rgba(0,229,160,0.6); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    [data-theme="dark"]  .toggle-thumb { left: 3px; }
+    [data-theme="light"] .toggle-thumb { left: 19px; }
+
+    /* ── Badges ─────────────────────────────────────────── */
+    .badge {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .badge-green { background: rgba(0,229,160,0.15); border: 1px solid rgba(0,229,160,0.4); color: var(--accent-green); }
+    .badge-blue  { background: rgba(76,201,240,0.15); border: 1px solid rgba(76,201,240,0.4); color: var(--accent-blue); }
+
+    /* ── Stats Row ──────────────────────────────────────── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.25); }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .stat-card.green::before  { background: linear-gradient(90deg, var(--accent-green), transparent); }
+    .stat-card.yellow::before { background: linear-gradient(90deg, var(--accent-yellow), transparent); }
+    .stat-card.red::before    { background: linear-gradient(90deg, var(--accent-red), transparent); }
+    .stat-card.blue::before   { background: linear-gradient(90deg, var(--accent-blue), transparent); }
+
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .stat-value { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+    .stat-sub   { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+    .stat-card.green .stat-value  { color: var(--accent-green); }
+    .stat-card.yellow .stat-value { color: var(--accent-yellow); }
+    .stat-card.red .stat-value    { color: var(--accent-red); }
+    .stat-card.blue .stat-value   { color: var(--accent-blue); }
+
+    /* ── Main Grid ──────────────────────────────────────── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+
+    /* ── Panel ──────────────────────────────────────────── */
+    .panel { border-radius: var(--radius); padding: 28px; }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+    .panel-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── Form ───────────────────────────────────────────── */
+    .form-group { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, color 0.3s;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      appearance: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent-green);
+      background: var(--input-focus);
+    }
+    [data-theme="dark"] select option { background: #0d1b4b; color: #f0f4ff; }
+    [data-theme="light"] select option { background: #fff; color: #0d1b4b; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .range-wrap { display: flex; align-items: center; gap: 12px; }
+
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(128,128,128,0.25);
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,229,160,0.6);
+      transition: transform 0.15s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .range-val { font-size: 0.9rem; font-weight: 600; color: var(--accent-green); min-width: 40px; text-align: right; }
+
+    .btn-predict {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: linear-gradient(135deg, var(--accent-green), #00b4d8);
+      color: #000;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      margin-top: 8px;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 20px rgba(0,229,160,0.35);
+    }
+    .btn-predict:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,160,0.5); }
+    .btn-predict:active { transform: translateY(0); opacity: 0.85; }
+
+    /* ── Chart ──────────────────────────────────────────── */
+    .chart-area { position: relative; padding-top: 8px; }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .shelf-days {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .shelf-days span { font-size: 1rem; font-weight: 500; -webkit-text-fill-color: var(--text-muted); }
+
+    .risk-pill {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .risk-low    { background: rgba(0,229,160,0.2);   color: var(--accent-green);  border: 1px solid rgba(0,229,160,0.4); }
+    .risk-medium { background: rgba(255,209,102,0.2); color: var(--accent-yellow); border: 1px solid rgba(255,209,102,0.4); }
+    .risk-high   { background: rgba(255,107,107,0.2); color: var(--accent-red);    border: 1px solid rgba(255,107,107,0.4); }
+
+    svg.curve { width: 100%; overflow: visible; }
+
+    /* ── Factor Chips ────────────────────────────────────── */
+    .factors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+
+    .factor-chip {
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      text-align: center;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      transition: background 0.35s ease, border-color 0.35s ease;
+    }
+    .factor-icon  { font-size: 1.4rem; margin-bottom: 4px; }
+    .factor-name  { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .factor-score { font-size: 1.1rem; font-weight: 700; }
+
+    /* ── Bottom Grid ─────────────────────────────────────── */
+    .bottom-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+    @media (max-width: 768px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    /* ── Recs ───────────────────────────────────────────── */
+    .rec-list { display: flex; flex-direction: column; gap: 12px; }
+    .rec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--rec-bg);
+      border: 1px solid var(--rec-border);
+      transition: background 0.2s, border-color 0.35s ease;
+    }
+    .rec-item:hover { background: var(--rec-hover); }
+    .rec-icon  { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .rec-text  { font-size: 0.85rem; line-height: 1.5; color: var(--text); transition: color 0.35s ease; }
+    .rec-text strong { color: var(--accent-green); }
+
+    /* ── Tracker ────────────────────────────────────────── */
+    .tracker { display: flex; flex-direction: column; gap: 10px; }
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--rec-bg);
+      border: 1px solid var(--rec-border);
+      transition: background 0.2s;
+    }
+    .track-item:hover { background: var(--rec-hover); }
+    .track-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .track-info { flex: 1; min-width: 0; }
+    .track-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); transition: color 0.35s ease; }
+    .track-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    .track-status { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; white-space: nowrap; }
+
+    /* ── Scrollbar ──────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
+
+    /* ── Transition overlay for theme switch ──────────────── */
+    .theme-transition * { transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease !important; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🌡️</div>
+      <div class="logo-text">
+        <h1>ShelfSense</h1>
+        <p>Predictive Shelf Life Engine</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="badge badge-green">● Live</span>
+      <span class="badge badge-blue">v2.4.1</span>
+
+      <!-- Theme Toggle -->
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
+        <span id="themeIcon">☀️</span>
+        <div class="toggle-track">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span id="themeLabel">Light Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Stats ── -->
+  <div class="stats">
+    <div class="stat-card glass green">
+      <div class="stat-label">Products Analyzed</div>
+      <div class="stat-value">2,847</div>
+      <div class="stat-sub">↑ 14% this month</div>
+    </div>
+    <div class="stat-card glass yellow">
+      <div class="stat-label">Avg. Accuracy</div>
+      <div class="stat-value">94.2%</div>
+      <div class="stat-sub">vs. real-time studies</div>
+    </div>
+    <div class="stat-card glass red">
+      <div class="stat-label">Spoilage Prevented</div>
+      <div class="stat-value">38%</div>
+      <div class="stat-sub">↓ rejection at customs</div>
+    </div>
+    <div class="stat-card glass blue">
+      <div class="stat-label">Active Shipments</div>
+      <div class="stat-value">124</div>
+      <div class="stat-sub">Across 18 countries</div>
+    </div>
+  </div>
+
+  <!-- ── Main Grid ── -->
+  <div class="main-grid">
+
+    <!-- Formulation Input -->
+    <div class="panel glass">
+      <div class="panel-title">
+        <div class="dot" style="background:var(--accent-green)"></div>
+        Product Formulation
+      </div>
+
+      <div class="form-group">
+        <label>Product Name</label>
+        <input type="text" id="productName" value="Mango Chutney" placeholder="e.g. Tomato Paste">
+      </div>
+
+      <div class="form-group">
+        <label>Packaging Type</label>
+        <select id="packaging" onchange="predict()">
+          <option value="glass">Glass Jar (hermetic)</option>
+          <option value="pet">PET Bottle</option>
+          <option value="retort" selected>Retort Pouch</option>
+          <option value="tin">Tin Can</option>
+          <option value="modified">Modified Atmosphere</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>pH Level</label>
+          <input type="number" id="pH" value="3.8" step="0.1" min="2" max="8" oninput="predict()">
+        </div>
+        <div class="form-group">
+          <label>Sugar (Brix °)</label>
+          <input type="number" id="brix" value="42" step="0.5" min="0" max="100" oninput="predict()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Water Activity (Aᵥᵥ) — <span id="awLabel">0.82</span></label>
+        <div class="range-wrap">
+          <input type="range" id="aw" min="0.5" max="0.99" step="0.01" value="0.82"
+                 oninput="document.getElementById('awLabel').textContent=parseFloat(this.value).toFixed(2); predict()">
+          <span class="range-val" id="awVal">0.82</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Storage Temperature (°C) — <span id="tempLabel">25°C</span></label>
+        <div class="range-wrap">
+          <input type="range" id="temp" min="0" max="45" step="1" value="25"
+                 oninput="document.getElementById('tempLabel').textContent=this.value+'°C'; predict()">
+          <span class="range-val" id="tempVal">25°C</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Destination Market</label>
+        <select id="market" onchange="predict()">
+          <option value="eu">🇪🇺 European Union</option>
+          <option value="us" selected>🇺🇸 United States</option>
+          <option value="gcc">🌙 Gulf (GCC)</option>
+          <option value="sea">🌏 SE Asia</option>
+          <option value="uk">🇬🇧 United Kingdom</option>
+        </select>
+      </div>
+
+      <button class="btn-predict" onclick="predict()">⚡ Run Prediction</button>
+    </div>
+
+    <!-- Shelf Life Chart -->
+    <div class="panel glass chart-area">
+      <div class="chart-header">
+        <div>
+          <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">Predicted Shelf Life</div>
+          <div class="shelf-days" id="shelfDays">284 <span>days</span></div>
+        </div>
+        <span class="risk-pill risk-low" id="riskPill">✓ Low Risk</span>
+      </div>
+
+      <svg class="curve" viewBox="0 0 480 180" id="chart">
+        <defs>
+          <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#00e5a0" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#00e5a0" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Grid lines -->
+        <line x1="0" y1="30"  x2="480" y2="30"  stroke="var(--grid-line)" stroke-width="1"/>
+        <line x1="0" y1="70"  x2="480" y2="70"  stroke="var(--grid-line)" stroke-width="1"/>
+        <line x1="0" y1="110" x2="480" y2="110" stroke="var(--grid-line)" stroke-width="1"/>
+        <line x1="0" y1="150" x2="480" y2="150" stroke="var(--grid-line)" stroke-width="1"/>
+
+        <!-- Axis labels -->
+        <text x="0"   y="175" fill="var(--axis-text)" font-size="11">0</text>
+        <text x="110" y="175" fill="var(--axis-text)" font-size="11" id="xL1">60d</text>
+        <text x="225" y="175" fill="var(--axis-text)" font-size="11" id="xL2">120d</text>
+        <text x="340" y="175" fill="var(--axis-text)" font-size="11" id="xL3">180d</text>
+        <text x="455" y="175" fill="var(--axis-text)" font-size="11" id="xL4">240d</text>
+        <text x="-4" y="35"  fill="var(--axis-text)" font-size="10" text-anchor="end">100%</text>
+        <text x="-4" y="115" fill="var(--axis-text)" font-size="10" text-anchor="end">50%</text>
+        <text x="-4" y="155" fill="var(--axis-text)" font-size="10" text-anchor="end">25%</text>
+
+        <!-- Danger zone -->
+        <rect x="0" y="130" width="480" height="20" fill="rgba(255,107,107,0.06)" rx="2"/>
+        <text x="4" y="142" fill="rgba(255,107,107,0.5)" font-size="9">⚠ Spoilage threshold</text>
+
+        <!-- Area + Curve -->
+        <path id="areaPath" fill="url(#curveGrad)"/>
+        <path id="curvePath" fill="none" stroke="#00e5a0" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+
+        <!-- Study dots -->
+        <circle id="d1" cx="60"  r="4" fill="#fff" stroke="#00e5a0" stroke-width="2"/>
+        <circle id="d2" cx="120" r="4" fill="#fff" stroke="#00e5a0" stroke-width="2"/>
+        <circle id="d3" cx="200" r="4" fill="#fff" stroke="#00e5a0" stroke-width="2"/>
+
+        <!-- End marker -->
+        <circle id="endDot" r="6" fill="#00e5a0" filter="url(#glow)"/>
+        <text id="endLabel" fill="#00e5a0" font-size="11" font-weight="bold" dy="-10" text-anchor="middle"/>
+      </svg>
+
+      <div class="factors">
+        <div class="factor-chip">
+          <div class="factor-icon">💧</div>
+          <div class="factor-name">Water Activity</div>
+          <div class="factor-score" id="factorAw" style="color:var(--accent-yellow)">0.82</div>
+        </div>
+        <div class="factor-chip">
+          <div class="factor-icon">🧪</div>
+          <div class="factor-name">pH Score</div>
+          <div class="factor-score" id="factorPH" style="color:var(--accent-green)">3.8</div>
+        </div>
+        <div class="factor-chip">
+          <div class="factor-icon">🌡️</div>
+          <div class="factor-name">Temp Risk</div>
+          <div class="factor-score" id="factorTemp" style="color:var(--accent-yellow)">25°C</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bottom Row ── -->
+  <div class="bottom-grid">
+    <div class="panel glass">
+      <div class="panel-title">
+        <div class="dot" style="background:var(--accent-yellow)"></div>
+        AI Recommendations
+      </div>
+      <div class="rec-list" id="recList"></div>
+    </div>
+
+    <div class="panel glass">
+      <div class="panel-title">
+        <div class="dot" style="background:var(--accent-blue)"></div>
+        Live Shipment Tracker
+      </div>
+      <div class="tracker">
+        <div class="track-item">
+          <div class="track-dot" style="background:var(--accent-green)"></div>
+          <div class="track-info">
+            <div class="track-name">Mango Chutney — Dubai Port</div>
+            <div class="track-meta">Temp: 22°C · Humidity: 58% · Day 12/180</div>
+          </div>
+          <span class="track-status" style="background:rgba(0,229,160,0.15);color:var(--accent-green);border:1px solid rgba(0,229,160,0.3)">On Track</span>
+        </div>
+        <div class="track-item">
+          <div class="track-dot" style="background:var(--accent-yellow)"></div>
+          <div class="track-info">
+            <div class="track-name">Tomato Paste — Rotterdam</div>
+            <div class="track-meta">Temp: 31°C · Humidity: 74% · Day 45/365</div>
+          </div>
+          <span class="track-status" style="background:rgba(255,209,102,0.15);color:var(--accent-yellow);border:1px solid rgba(255,209,102,0.3)">Monitor</span>
+        </div>
+        <div class="track-item">
+          <div class="track-dot" style="background:var(--accent-red)"></div>
+          <div class="track-info">
+            <div class="track-name">Dried Shrimp — LA Customs</div>
+            <div class="track-meta">Temp: 38°C · Humidity: 82% · Day 78/120</div>
+          </div>
+          <span class="track-status" style="background:rgba(255,107,107,0.15);color:var(--accent-red);border:1px solid rgba(255,107,107,0.3)">⚠ Alert</span>
+        </div>
+        <div class="track-item">
+          <div class="track-dot" style="background:var(--accent-blue)"></div>
+          <div class="track-info">
+            <div class="track-name">Coconut Oil — Singapore</div>
+            <div class="track-meta">Temp: 28°C · Humidity: 65% · Day 5/540</div>
+          </div>
+          <span class="track-status" style="background:rgba(76,201,240,0.15);color:var(--accent-blue);border:1px solid rgba(76,201,240,0.3)">On Track</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ── Theme Toggle ─────────────────────────────────────── */
+  function toggleTheme() {
+    const html  = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+
+    // Add transition class temporarily
+    document.body.classList.add('theme-transition');
+    setTimeout(() => document.body.classList.remove('theme-transition'), 400);
+
+    document.getElementById('themeIcon').textContent  = isDark ? '🌙' : '☀️';
+    document.getElementById('themeLabel').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+
+    // Persist preference
+    localStorage.setItem('shelfsense-theme', isDark ? 'light' : 'dark');
+  }
+
+  // Restore saved preference
+  (function() {
+    const saved = localStorage.getItem('shelfsense-theme');
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved);
+      if (saved === 'light') {
+        document.getElementById('themeIcon').textContent  = '🌙';
+        document.getElementById('themeLabel').textContent = 'Dark Mode';
+      }
+    }
+  })();
+
+  /* ── Prediction Engine ─────────────────────────────────── */
+  function predict() {
+    const aw   = parseFloat(document.getElementById('aw').value);
+    const temp = parseFloat(document.getElementById('temp').value);
+    const pH   = parseFloat(document.getElementById('pH').value);
+    const pkg  = document.getElementById('packaging').value;
+    const mkt  = document.getElementById('market').value;
+
+    document.getElementById('awVal').textContent   = aw.toFixed(2);
+    document.getElementById('tempVal').textContent = temp + '°C';
+
+    const pkgBase = { glass:540, tin:480, retort:360, pet:220, modified:180 };
+    let days = pkgBase[pkg] || 300;
+
+    const awFactor = 1 - Math.pow((aw - 0.5) / 0.5, 1.8);
+    days *= 0.3 + 0.7 * awFactor;
+
+    const phFactor = pH < 4.6 ? 1.3 - (pH - 2) * 0.05 : 1 - (pH - 4.6) * 0.12;
+    days *= phFactor;
+
+    const Q10 = 2;
+    const tempFactor = Math.pow(Q10, -(temp - 25) / 10);
+    days *= tempFactor;
+
+    const mktBuffer = { eu:0.85, us:0.90, gcc:0.92, sea:0.95, uk:0.87 };
+    days *= mktBuffer[mkt] || 0.9;
+    days = Math.max(30, Math.round(days));
+
+    let risk, riskClass, riskIcon;
+    if (days > 180)     { risk='Low Risk';    riskClass='risk-low';    riskIcon='✓'; }
+    else if (days > 90) { risk='Medium Risk'; riskClass='risk-medium'; riskIcon='⚠'; }
+    else                { risk='High Risk';   riskClass='risk-high';   riskIcon='✕'; }
+
+    document.getElementById('shelfDays').innerHTML = `${days} <span>days</span>`;
+    const pill = document.getElementById('riskPill');
+    pill.textContent = riskIcon + ' ' + risk;
+    pill.className   = 'risk-pill ' + riskClass;
+
+    const awColor  = aw < 0.7 ? '#00e5a0' : aw < 0.85 ? '#ffd166' : '#ff6b6b';
+    const phColor  = pH < 4.6 ? '#00e5a0' : pH < 6.0  ? '#ffd166' : '#ff6b6b';
+    const tmpColor = temp < 20 ? '#4cc9f0' : temp < 30  ? '#ffd166' : '#ff6b6b';
+
+    document.getElementById('factorAw').textContent   = aw.toFixed(2);
+    document.getElementById('factorAw').style.color   = awColor;
+    document.getElementById('factorPH').textContent   = pH;
+    document.getElementById('factorPH').style.color   = phColor;
+    document.getElementById('factorTemp').textContent = temp + '°C';
+    document.getElementById('factorTemp').style.color = tmpColor;
+
+    drawCurve(days, risk);
+    updateRecs(aw, pH, temp, pkg, days, risk);
+  }
+
+  function drawCurve(days, risk) {
+    const W = 480, H = 150;
+    const maxDays = Math.max(days * 1.15, 100);
+    const color   = risk === 'Low Risk' ? '#00e5a0' : risk === 'Medium Risk' ? '#ffd166' : '#ff6b6b';
+
+    document.getElementById('curvePath').style.stroke = color;
+    document.getElementById('endDot').style.fill = color;
+
+    const pts = [];
+    const steps = 60;
+    const k = Math.log(5) / days;
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * maxDays;
+      const x = (t / maxDays) * W;
+      const q = Math.exp(-k * t);
+      const y = H - (q * (H - 30)) - 5;
+      pts.push([x, y]);
+    }
+
+    const polyline = pts.map((p,i) => i===0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`).join(' ');
+    document.getElementById('curvePath').setAttribute('d', polyline);
+    document.getElementById('areaPath').setAttribute('d', polyline + ` L${W},${H+10} L0,${H+10} Z`);
+
+    const ex = (days / maxDays) * W;
+    const ey = H - (Math.exp(-k * days) * (H - 30)) - 5;
+    document.getElementById('endDot').setAttribute('cx', ex);
+    document.getElementById('endDot').setAttribute('cy', ey);
+    document.getElementById('endDot').style.fill = color;
+    document.getElementById('endLabel').setAttribute('x', ex);
+    document.getElementById('endLabel').setAttribute('y', ey);
+    document.getElementById('endLabel').textContent = days + 'd';
+    document.getElementById('endLabel').style.fill = color;
+
+    [0.2, 0.45, 0.75].forEach((frac, i) => {
+      const t = frac * maxDays;
+      const q = Math.exp(-k * t);
+      const el = document.getElementById(['d1','d2','d3'][i]);
+      el.setAttribute('cx', frac * W);
+      el.setAttribute('cy', H - (q * (H - 30)) - 5);
+      el.style.stroke = color;
+    });
+
+    const step = Math.round(maxDays / 4 / 10) * 10;
+    ['xL1','xL2','xL3','xL4'].forEach((id, i) => {
+      document.getElementById(id).textContent = (step*(i+1)) + 'd';
+    });
+  }
+
+  function updateRecs(aw, pH, temp, pkg, days, risk) {
+    const recs = [];
+    if (aw > 0.85) recs.push({icon:'💧', text:`<strong>Critical:</strong> Water activity (${aw}) is dangerously high. Consider adding humectants (glycerol, sorbitol) or improving moisture barrier packaging.`});
+    if (pH > 4.6)  recs.push({icon:'🧪', text:`<strong>Warning:</strong> pH ${pH} is above the critical 4.6 threshold — not classified as acidified food. Add citric acid or reformulate.`});
+    if (temp > 30) recs.push({icon:'🌡️', text:`<strong>Storage Alert:</strong> ${temp}°C exceeds safe threshold. Cold-chain shipping strongly recommended. Shelf life reduced by ~${Math.round((1-Math.pow(2,-(temp-25)/10))*100)}%.`});
+    if (pkg === 'pet' && days < 150) recs.push({icon:'📦', text:`<strong>Packaging Upgrade:</strong> Switch from PET to <strong>retort pouch or glass jar</strong> to gain 60–120 additional days.`});
+    if (days > 180 && risk === 'Low Risk') recs.push({icon:'✅', text:`<strong>Export Ready:</strong> Product meets shelf life requirements for all major markets. Consider EU organic certification to increase margins.`});
+    if (recs.length === 0) recs.push({icon:'📊', text:`<strong>Stable formulation.</strong> Run accelerated shelf life study (ASLT) at 40°C/75%RH for 12 weeks to validate the model prediction.`});
+    recs.push({icon:'📋', text:`<strong>Compliance:</strong> Destination market requires ${document.getElementById('market').selectedOptions[0].text} labeling standards. Auto-generate label?`});
+
+    document.getElementById('recList').innerHTML = recs.map(r =>
+      `<div class="rec-item"><div class="rec-icon">${r.icon}</div><div class="rec-text">${r.text}</div></div>`
+    ).join('');
+  }
+
+  predict();
+</script>
+</body>
+</html>
