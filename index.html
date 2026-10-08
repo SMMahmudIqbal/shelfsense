@@ -802,7 +802,7 @@
       <div class="logo-badge">SS</div>
       <span class="logo-text">ShelfSense</span>
     </a>
-    <div class="nav-tag">Food Engineering Engine</div>
+    <div class="nav-tag">Developed by S. M. Mahmud Iqbal</div>
   </nav>
 
   <!-- Marquee Ticker -->
@@ -817,7 +817,7 @@
     <!-- Hero Card (Yellow with 32px x 32px Dot Pattern) -->
     <section class="hero-card bg-yellow-dots">
       <div class="hero-eyebrow">
-        <span>&bull;</span> Predictive Kinetics for Food Exporters
+        <span>&bull;</span> Developed by S. M. Mahmud Iqbal &bull; Predictive Food Kinetics
       </div>
 
       <h1 class="hero-headline">
@@ -1017,73 +1017,13 @@
         </div>
 
       </div>
-    </div>
-
-    <!-- Recommendations & Live Shipments -->
-    <div class="bottom-two-col">
-
-      <!-- Recommendations -->
-      <div class="neo-card">
-        <div class="neo-card-header" style="background:var(--accent); color:var(--text);">
-          <span class="neo-card-title">Engineering Advisory</span>
-          <span class="neo-card-tag" id="recBadgeCount">03 ADVISORIES</span>
-        </div>
-        <div id="recContainer"></div>
-      </div>
-
-      <!-- Live Shipments Tracker -->
-      <div class="neo-card">
-        <div class="neo-card-header" style="background:var(--accent); color:var(--text);">
-          <span class="neo-card-title">Live Port Watchlist</span>
-          <span class="neo-card-tag">IoT TELEMETRY</span>
-        </div>
-
-        <div class="shipment-row">
-          <div class="ship-status-square green"></div>
-          <div>
-            <div class="ship-title">Mango Chutney &mdash; Jebel Ali Port, UAE</div>
-            <div class="ship-details">Temp: 22&deg;C &bull; RH: 58% &bull; Elapsed: Day 14 / 180</div>
-          </div>
-          <span class="ship-badge on-track">On Track</span>
-        </div>
-
-        <div class="shipment-row">
-          <div class="ship-status-square yellow"></div>
-          <div>
-            <div class="ship-title">Tomato Puree &mdash; Rotterdam, Netherlands</div>
-            <div class="ship-details">Temp: 31&deg;C (Spike) &bull; RH: 74% &bull; Elapsed: Day 42 / 365</div>
-          </div>
-          <span class="ship-badge monitor">Monitor</span>
-        </div>
-
-        <div class="shipment-row">
-          <div class="ship-status-square charcoal"></div>
-          <div>
-            <div class="ship-title">Dried Shrimp &mdash; Port of Los Angeles, USA</div>
-            <div class="ship-details">Temp: 38&deg;C &bull; RH: 82% &bull; Elapsed: Day 80 / 120</div>
-          </div>
-          <span class="ship-badge alert">&excl; Warning</span>
-        </div>
-
-        <div class="shipment-row">
-          <div class="ship-status-square green"></div>
-          <div>
-            <div class="ship-title">Virgin Coconut Oil &mdash; Port of Singapore</div>
-            <div class="ship-details">Temp: 26&deg;C &bull; RH: 65% &bull; Elapsed: Day 7 / 540</div>
-          </div>
-          <span class="ship-badge on-track">On Track</span>
-        </div>
-      </div>
-
-    </div>
-
     <!-- Footer -->
     <footer>
       <div class="footer-left">
-        SHELLFSENSE &bull; PREDICTIVE SHELF LIFE ENGINE
+        DEVELOPED BY S. M. MAHMUD IQBAL
       </div>
       <div class="footer-right">
-        Formulated with Arrhenius &amp; Q10 Kinetic Equations &bull; v2.4.1
+        SHELLFSENSE &bull; PREDICTIVE SHELF LIFE ENGINE &bull; v2.4.1
       </div>
     </footer>
 
@@ -1155,9 +1095,8 @@
       document.getElementById('metricPh').textContent   = pH.toFixed(1);
       document.getElementById('metricTemp').textContent = temp + '°C';
 
-      // Update decay curve and advisory notes
+      // Update decay curve
       renderCurve(days);
-      renderAdvisory(aw, pH, temp, pkg, days);
     }
 
     /* SVG Decay Curve Rendering */
@@ -1210,45 +1149,6 @@
       ['xMark1', 'xMark2', 'xMark3', 'xMark4'].forEach((id, idx) => {
         document.getElementById(id).textContent = (stepDays * (idx + 1)) + 'D';
       });
-    }
-
-    /* Food Safety & Formulation Advisories */
-    function renderAdvisory(aw, pH, temp, pkg, days) {
-      const advisories = [];
-
-      if (aw > 0.85) {
-        advisories.push(`<strong>Water Activity Alert &mdash;</strong> A<sub>w</sub> ${aw.toFixed(2)} supports Staphylococcus aureus and osmophilic yeast proliferation. Incorporate food-grade humectants (glycerol, maltodextrin) or reduce moisture content.`);
-      }
-
-      if (pH > 4.6) {
-        advisories.push(`<strong>Equilibrium pH Violation &mdash;</strong> Formulation pH ${pH.toFixed(1)} exceeds 4.6 (FDA Acidified Food Threshold). Product requires high-pressure processing or retorting to prevent Clostridium botulinum spore outgrowth.`);
-      }
-
-      if (temp > 30) {
-        advisories.push(`<strong>Thermal Acceleration &mdash;</strong> Ambient shipment at ${temp}&deg;C accelerates oxidation and Maillard browning by ${Math.round((Math.pow(2, (temp - 25)/10) - 1) * 100)}%. Mandatory refrigerated reefers (15&ndash;18&deg;C) advised.`);
-      }
-
-      if (pkg === 'pet' && days < 160) {
-        advisories.push(`<strong>Gas Barrier Deficiency &mdash;</strong> High O<sub>2</sub> permeability in PET accelerates flavor loss. Transition to aluminum foil retort laminate for +90&ndash;140 days shelf extension.`);
-      }
-
-      if (days >= 180) {
-        advisories.push(`<strong>Compliance Target Met &mdash;</strong> Formulation fulfills sea freight transit + retail distribution standard for target market. Schedule accelerated 12-week ASLT verification.`);
-      }
-
-      if (advisories.length === 0) {
-        advisories.push(`<strong>Stable Parameters &mdash;</strong> Formulation, barrier, and thermal profile within acceptable stability threshold.`);
-      }
-
-      document.getElementById('recBadgeCount').textContent =
-        String(advisories.length).padStart(2, '0') + ' ADVISOR' + (advisories.length === 1 ? 'Y' : 'IES');
-
-      document.getElementById('recContainer').innerHTML = advisories.map((text, idx) => `
-        <div class="rec-item">
-          <div class="rec-index-badge">${String(idx + 1).padStart(2, '0')}</div>
-          <div class="rec-body-text">${text}</div>
-        </div>
-      `).join('');
     }
 
     /* Preset Sample Formulations */
