@@ -9,7 +9,7 @@
 
 ---
 
-## 📌 Executive Summary
+## Executive Summary
 
 Developing nations lose **30% to 40% of packaged perishable foods** at overseas ports and customs due to unexpected spoilage, microbial proliferation, and barrier failure during maritime transit. Traditional shelf-life validation requires **6 to 12 months** of real-time stability testing or expensive commercial accelerated studies ($1,500 – $3,500 per SKU).
 
@@ -17,9 +17,9 @@ Developing nations lose **30% to 40% of packaged perishable foods** at overseas 
 
 ---
 
-## ⚡ Key Capabilities
+## Key Capabilities
 
-### 1. 🧪 Arrhenius Kinetic Shelf Stability Engine
+### 1. Arrhenius Kinetic Shelf Stability Engine
 - **Water Activity ($A_w$):** Models exponential microbial inhibition and moisture sorption stress across critical boundaries (0.50 – 0.99).
 - **Acidification Thresholds:** Validates against the international acidified food cutoff (pH $\le$ 4.60) to prevent *Clostridium botulinum* spore germination.
 - **Thermal Acceleration ($Q_{10}$ Factor):** Simulates sea-lane ambient heat spikes (25°C baseline up to 45°C equatorial cargo holds).
@@ -30,25 +30,25 @@ Developing nations lose **30% to 40% of packaged perishable foods** at overseas 
   - High-barrier & Standard PET Bottles
   - Modified Atmosphere Packaging (MAP)
 
-### 2. ⚖️ Formula A vs. Formula B Scenario Comparator
+### 2. Formula A vs. Formula B Scenario Comparator
 - Side-by-side formulation playground comparing baseline recipes against optimized reformulations.
 - Dual-trajectory SVG decay curves plotted simultaneously.
 - Dynamic **Days Gained** and percentage shelf-life extension callouts.
 
-### 3. 📄 One-Click Official Export Stability Certificate (PDF Generator)
+### 3. One-Click Official Export Stability Certificate (PDF Generator)
 - Generates an export compliance certificate with a unique verification serial (e.g., `CERT-SS-2026-8849`).
 - Features a **Hazard Evaluation Table** (*Clostridium botulinum*, *Staphylococcus aureus*, lipid oxidation).
 - Print-optimized (`@media print`) layout ready for overseas buyers, customs brokers, BSTI, and FDA compliance filings.
 - Digital sign-off and certification block by **S. M. Mahmud Iqbal**.
 
-### 4. 📦 Packaging Cost vs. Spoilage Savings Calculator (FCL Model)
+### 4. Packaging Cost vs. Spoilage Savings Calculator (FCL Model)
 - Full Container Load (20ft FCL) batch financial modeling.
 - Quantifies packaging upgrade investment vs. cargo write-off risk elimination.
 - Calculates **Protected Cargo Profit** and **Net Return on Investment (ROI %)**.
 
 ---
 
-## 🎨 Design System: Neo-Brutalism
+## Design System: Neo-Brutalism
 
 ShelfSense is built with a high-contrast **Neo-Brutalist aesthetic**:
 
@@ -69,7 +69,7 @@ ShelfSense is built with a high-contrast **Neo-Brutalist aesthetic**:
 
 ---
 
-## 🔬 Mathematical & Food Engineering Formulation
+## Mathematical and Food Engineering Formulation
 
 The core simulation couples the Arrhenius rate equation with moisture sorption kinetics:
 
@@ -86,7 +86,7 @@ Where:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Local Setup
 No build tools or heavy dependencies required. Just clone and open in any modern browser:
@@ -108,7 +108,7 @@ vercel --prod
 
 ---
 
-## 👤 Author & Attribution
+## Author and Attribution
 
 **Developed by S. M. Mahmud Iqbal**  
 - GitHub: [@SMMahmudIqbal](https://github.com/SMMahmudIqbal)  
@@ -116,6 +116,6 @@ vercel --prod
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
