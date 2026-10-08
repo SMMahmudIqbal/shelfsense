@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShelfSense — B2B Outreach Command Center</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500,400&f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #ffe17c;
+      --bg: #171e19;
+      --accent: #b7c6c2;
+      --ui: #ffffff;
+      --text: #000000;
+      --border: 2px solid #000;
+      --shadow-sm: 4px 4px 0px 0px #000;
+      --shadow-lg: 8px 8px 0px 0px #000;
+      --font-heading: 'Cabinet Grotesk', sans-serif;
+      --font-body: 'Satoshi', sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      padding: 32px 20px;
+      min-height: 100vh;
+    }
+    .wrapper {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .header-card {
+      background: var(--primary);
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--ui);
+      border: var(--border);
+      box-shadow: 2px 2px 0 var(--text);
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    p.sub {
+      font-size: 1rem;
+      max-width: 680px;
+      line-height: 1.5;
+    }
+    .leads-grid {
+      display: grid;
+      gap: 18px;
+    }
+    .lead-card {
+      background: var(--ui);
+      border: var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      transition: transform 120ms ease;
+    }
+    @media (max-width: 768px) {
+      .lead-card {
+        grid-template-columns: 1fr;
+      }
+    }
+    .lead-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px 0px #000;
+    }
+    .lead-company {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+    .lead-meta {
+      font-size: 0.85rem;
+      color: #444;
+      line-height: 1.4;
+    }
+    .tag {
+      display: inline-block;
+      background: var(--accent);
+      border: 1.5px solid #000;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 220px;
+    }
+    .btn {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      padding: 10px 18px;
+      border: var(--border);
+      box-shadow: 3px 3px 0 var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      color: #000;
+    }
+    .btn:hover {
+      transform: translate(3px, 3px);
+      box-shadow: 0px 0px 0px 0px #000;
+    }
+    .btn-gmail { background: var(--primary); }
+    .btn-linkedin { background: var(--accent); }
+    .footer-note {
+      text-align: center;
+      color: var(--accent);
+      margin-top: 36px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header-card">
+      <div class="badge">Developed by S. M. Mahmud Iqbal</div>
+      <h1>Outreach Command Center</h1>
+      <p class="sub">
+        Click <strong>"Open in Gmail"</strong> to launch pre-written, personalized export shelf stability proposals with 1-click. No complex API setup required.
+      </p>
+    </div>
+
+    <div class="leads-grid" id="leadsContainer"></div>
+
+    <div class="footer-note">
+      ShelfSense Outreach Engine &bull; Developed by S. M. Mahmud Iqbal
+    </div>
+  </div>
+
+  <script>
+    const leads = [
+      {
+        company: "PRAN Agro Processors",
+        contact: "Tanvir Ahmed (QA & Compliance Lead)",
+        email: "tanvir.qa@pranfoods.com",
+        product: "Mango Pickle & Sweet Chutney",
+        market: "North America (FDA) & Middle East (GSO)",
+        searchUrl: "https://www.linkedin.com/search/results/people/?keywords=PRAN%20Foods%20Quality%20Assurance"
+      },
+      {
+        company: "Square Food & Beverage Ltd.",
+        contact: "Farhana Rahman (R&D / Preservation Lead)",
+        email: "farhana.rnd@squarefood.com",
+        product: "Spiced Purees & Mustard Oil Condiments",
+        market: "European Union (EFSA)",
+        searchUrl: "https://www.linkedin.com/search/results/people/?keywords=Square%20Food%20Quality%20Assurance"
+      },
+      {
+        company: "Akij Food & Beverage Ltd.",
+        contact: "Kamal Hossain (Export Operations Director)",
+        email: "kamal.export@akijfood.com",
+        product: "Aseptic Fruit Concentrates & Pulp",
+        market: "Gulf Cooperation Council (GCC)",
+        searchUrl: "https://www.linkedin.com/search/results/people/?keywords=Akij%20Food%20Export%20Manager"
+      },
+      {
+        company: "Olympic Food Products",
+        contact: "Nayeem Islam (Plant Quality Manager)",
+        email: "nayeem.qa@olympicbd.com",
+        product: "Export Confectionery & Premium Biscuits",
+        market: "Southeast Asia (ASEAN)",
+        searchUrl: "https://www.linkedin.com/search/results/people/?keywords=Olympic%20Industries%20Quality%20Manager"
+      },
+      {
+        company: "ACI Foods Limited",
+        contact: "Shakil Mahmood (Preservation Scientist)",
+        email: "shakil.rnd@acifoods.com",
+        product: "Processed Seasonings & Culinary Pastes",
+        market: "United Kingdom (UK FSA)",
+        searchUrl: "https://www.linkedin.com/search/results/people/?keywords=ACI%20Foods%20Quality%20Assurance"
+      }
+    ];
+
+    function makeGmailUrl(lead) {
+      const subject = encodeURIComponent(`Quick shelf stability review for ${lead.company}'s ${lead.product} export line`);
+      const body = encodeURIComponent(`Dear ${lead.contact.split(' ')[0]},
+
+I noticed ${lead.company} has been expanding overseas distribution of your ${lead.product} lineup into ${lead.market}.
+
+As a food engineering researcher specializing in preservation kinetics, I developed ShelfSense (https://shelfsense-lemon.vercel.app) — a predictive stability engine that models water activity (Aw), equilibrium pH, and Arrhenius temperature stress during 30-day maritime shipping.
+
+Under equatorial cargo hold transit (32–35°C), moisture vapor transfer across standard packaging often reduces effective shelf life by 25–40%, leading to costly destination port rejections.
+
+I would love to run a complimentary, 1-page Shelf Stability Certificate for one of ${lead.company}'s export SKUs so your QA team can review the kinetic decay trajectory before your next container ships.
+
+Would you be open to reviewing a sample evaluation?
+
+Best regards,
+
+S. M. Mahmud Iqbal
+Food Process & Preservation Engineering
+ShelfSense — https://shelfsense-lemon.vercel.app
+Developed by S. M. Mahmud Iqbal`);
+
+      return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${subject}&body=${body}`;
+    }
+
+    const container = document.getElementById('leadsContainer');
+    leads.forEach(lead => {
+      const card = document.createElement('div');
+      card.className = 'lead-card';
+      card.innerHTML = `
+        <div>
+          <div class="lead-company">${lead.company}</div>
+          <div class="lead-meta">
+            <strong>Contact:</strong> ${lead.contact}<br>
+            <strong>Product:</strong> ${lead.product}<br>
+            <strong>Target Corridor:</strong> ${lead.market}
+          </div>
+          <span class="tag">Export SKU Identified</span>
+        </div>
+        <div class="actions">
+          <a href="${makeGmailUrl(lead)}" target="_blank" class="btn btn-gmail">
+            ✉️ Open in Gmail (1-Click)
+          </a>
+          <a href="${lead.searchUrl}" target="_blank" class="btn btn-linkedin">
+            🔍 LinkedIn Profile Search
+          </a>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>
