@@ -1,0 +1,94 @@
+======================================================================
+PROSPECT: Nayeem Islam | Olympic Food Products
+EMAIL: nayeem.qa@olympicbd.com | TARGET MARKET: Southeast Asia
+======================================================================
+
+--- [STEP 1] ---
+SUBJECT: Quick shelf stability question for Olympic Food Products's Export Confectionery & Biscuits export line
+
+Dear Nayeem,
+
+I noticed Olympic Food Products has been expanding overseas distribution of your Export Confectionery & Biscuits lineup into Southeast Asia.
+
+As a food engineering researcher specializing in preservation kinetics, I developed ShelfSense (https://shelfsense-lemon.vercel.app) — a predictive stability engine that models water activity (Aw), equilibrium pH, and Arrhenius temperature stress during 30-day maritime shipping.
+
+Under typical 30–35°C equatorial cargo hold transit, moisture vapor transfer across standard packaging often reduces effective shelf life by 25–40%, leading to costly destination port rejections.
+
+I would love to run a complimentary, 1-page Shelf Stability Certificate for one of Olympic Food Products's export SKUs so your QA team can review the kinetic decay trajectory before your next shipment.
+
+Would you be open to reviewing a sample evaluation if I send it over?
+
+Best regards,
+
+S. M. Mahmud Iqbal
+Food Process & Preservation Engineering
+ShelfSense — https://shelfsense-lemon.vercel.app
+Developed by S. M. Mahmud Iqbal
+
+--- [STEP 2] ---
+SUBJECT: Re: Quick shelf stability question for Olympic Food Products's Export Confectionery & Biscuits export line
+
+Hi Nayeem,
+
+Following up on my note regarding Olympic Food Products's export packaging stability.
+
+For products like Export Confectionery & Biscuits, factory QA teams often face a tough trade-off: spending $2,500+ and waiting 4 months for commercial accelerated lab testing (ASLT), or risking cargo rejection at Southeast Asia customs.
+
+With ShelfSense, we model:
+1. Clostridium botulinum and fungal barrier limits (pH <= 4.60 & Aw <= 0.85).
+2. Packaging gas barrier transmission (PET vs. Retort Pouches vs. Glass Jars).
+3. Container ROI: protecting $30,000–$50,000 in perishable export cargo with a minor packaging adjustment.
+
+You can inspect our live simulator here:
+https://shelfsense-lemon.vercel.app
+
+If you reply with your flagship product's basic parameters (Aw, pH, and current packaging), I will personally generate an official verified stability dossier for your team at no charge.
+
+Warm regards,
+
+S. M. Mahmud Iqbal
+Food Process & Preservation Engineering
+ShelfSense | Developed by S. M. Mahmud Iqbal
+
+--- [STEP 3] ---
+SUBJECT: Container ROI breakdown for Olympic Food Products (packaging vs. spoilage risk)
+
+Hi Nayeem,
+
+One quick economic insight we frequently share with food processors in Southeast Asia corridors:
+
+On a standard 20ft container (approx. 24,000 units valued at $40,000):
+- Upgrading from basic PET to multi-layer barrier costs roughly $0.12/unit (~$2,880 total).
+- However, it eliminates an estimated 24% port spoilage and quarantine risk (~$9,600 in protected cargo).
+- That delivers a 233% net return on packaging investment.
+
+We built this directly into our interactive packaging calculator on ShelfSense:
+https://shelfsense-lemon.vercel.app
+
+Would you have 10 minutes next Tuesday for a brief call to see how this applies to Olympic Food Products's product catalog?
+
+Best,
+
+S. M. Mahmud Iqbal
+Food Process & Preservation Engineering
+ShelfSense — Developed by S. M. Mahmud Iqbal
+
+--- [STEP 4] ---
+SUBJECT: Closing the loop — Olympic Food Products export stability review
+
+Hi Nayeem,
+
+I assume export shelf-life modeling isn't a top priority for Olympic Food Products right now, so I will pause my follow-ups.
+
+If your QA or export team ever needs rapid Arrhenius stability validation or buyer-ready stability certificates for foreign customs, feel free to bookmark our engine:
+
+https://shelfsense-lemon.vercel.app
+
+Wishing Olympic Food Products continued success with your export operations!
+
+Sincerely,
+
+S. M. Mahmud Iqbal
+Food Process & Preservation Engineering
+Developed by S. M. Mahmud Iqbal
+
