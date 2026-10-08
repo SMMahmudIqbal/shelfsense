@@ -5,1031 +5,1278 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShelfSense — Predictive Shelf Life Engine</title>
 
-  <!-- Fonts: Cabinet Grotesk + Satoshi via Fontshare -->
+  <!-- Fonts: Cabinet Grotesk (800, 700, 400) & Satoshi (500, 700) -->
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500,400&f[]=satoshi@500,400,700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500,400&f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
 
   <style>
-    /* ── Reset ──────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* --- CSS Reset & Box Sizing --- */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* ── Tokens ─────────────────────────────────────────── */
+    /* --- Neo-Brutalist Design Tokens --- */
     :root {
-      --yellow:   #ffe17c;
-      --charcoal: #171e19;
-      --sage:     #b7c6c2;
-      --white:    #ffffff;
-      --black:    #000000;
+      --primary: #ffe17c;     /* Yellow */
+      --bg: #171e19;          /* Charcoal Background */
+      --accent: #b7c6c2;      /* Sage Accent */
+      --ui: #ffffff;          /* White UI */
+      --text: #000000;        /* Black Text */
+      --border-color: #000000;
 
-      --border:       2px solid var(--black);
-      --shadow-sm:    4px 4px 0px 0px var(--black);
-      --shadow-lg:    8px 8px 0px 0px var(--black);
-      --shadow-inner: inset 2px 2px 0px 0px rgba(0,0,0,0.15);
+      --border-2px: 2px solid var(--border-color);
+      --shadow-standard: 4px 4px 0px 0px var(--border-color);
+      --shadow-large: 8px 8px 0px 0px var(--border-color);
 
-      --font-head: 'Cabinet Grotesk', sans-serif;
-      --font-body: 'Satoshi', sans-serif;
+      --font-heading: 'Cabinet Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
 
       --ease-press: cubic-bezier(0.77, 0, 0.175, 1);
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      background: var(--charcoal);
-      color: var(--black);
+      background-color: var(--bg);
+      color: var(--text);
       font-family: var(--font-body);
       font-weight: 500;
       min-height: 100vh;
+      line-height: 1.45;
+      padding: 0 0 60px 0;
     }
 
-    /* ── Dot Pattern Utility ────────────────────────────── */
-    .dot-bg {
-      background-color: var(--yellow);
-      background-image: radial-gradient(circle, #000 1.2px, transparent 1.2px);
+    /* --- Dot Pattern for Yellow Backgrounds (32px x 32px radial, opacity 10%) --- */
+    .bg-yellow-dots {
+      background-color: var(--primary);
+      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.10) 2px, transparent 2px);
       background-size: 32px 32px;
       background-position: 0 0;
-      /* opacity of dots ~10% via color */
-      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
     }
 
-    /* ── NAV ────────────────────────────────────────────── */
+    /* --- Top Navigation Bar --- */
     nav {
-      background: var(--yellow);
-      border-bottom: var(--border);
-      padding: 0 32px;
+      background-color: var(--primary);
+      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.10) 2px, transparent 2px);
+      background-size: 32px 32px;
+      border-bottom: var(--border-2px);
+      padding: 16px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
       position: sticky;
       top: 0;
       z-index: 100;
-      background-color: var(--yellow);
-      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
-      background-size: 32px 32px;
     }
 
     .nav-logo {
-      font-family: var(--font-head);
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      color: var(--black);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
       text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      color: var(--primary);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-
-    .logo-box {
-      width: 36px; height: 36px;
-      background: var(--charcoal);
-      border: var(--border);
-      box-shadow: 3px 3px 0 var(--black);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--yellow);
-      font-size: 0.7rem;
-      font-family: var(--font-body);
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      flex-shrink: 0;
-    }
-
-    /* ── HERO ───────────────────────────────────────────── */
-    .hero {
-      background-color: var(--yellow);
-      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
-      background-size: 32px 32px;
-      border-bottom: var(--border);
-      padding: 64px 32px 56px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 48px;
-      align-items: end;
-    }
-
-    .hero-headline {
-      font-family: var(--font-head);
-      font-size: clamp(52px, 8vw, 110px);
+      justify-content: center;
+      font-family: var(--font-heading);
       font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 0.92;
-      color: var(--black);
-      margin-bottom: 28px;
-    }
-
-    .hero-headline em {
-      font-style: normal;
-      color: var(--charcoal);
-      -webkit-text-stroke: 2px var(--black);
-      color: transparent;
-    }
-
-    .hero-sub {
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--charcoal);
-      line-height: 1.65;
-      max-width: 480px;
-      margin-bottom: 36px;
-    }
-
-    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-
-    /* ── Buttons ────────────────────────────────────────── */
-    .btn {
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 13px 28px;
-      border: var(--border);
-      cursor: pointer;
-      transition: transform 200ms var(--ease-press), box-shadow 200ms var(--ease-press);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: var(--charcoal);
-      color: var(--yellow);
-      box-shadow: var(--shadow-sm);
-    }
-    .btn-primary:hover  { transform: translate(4px, 4px); box-shadow: none; }
-    .btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
-
-    .btn-outline {
-      background: var(--white);
-      color: var(--black);
-      box-shadow: var(--shadow-sm);
-    }
-    .btn-outline:hover  { transform: translate(4px, 4px); box-shadow: none; }
-    .btn-outline:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
-
-    /* ── Hero Stats ─────────────────────────────────────── */
-    .hero-stats {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      align-self: stretch;
-      justify-content: flex-end;
-    }
-
-    .hero-stat {
-      border: var(--border);
-      background: var(--white);
-      padding: 18px 24px;
-      margin-top: -2px;
-      min-width: 180px;
-      box-shadow: var(--shadow-sm);
-      transition: transform 200ms var(--ease-press), box-shadow 200ms var(--ease-press);
-    }
-    .hero-stat:hover { transform: translate(4px, 4px); box-shadow: none; }
-
-    .stat-val {
-      font-family: var(--font-head);
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      color: var(--black);
-    }
-    .stat-label {
-      font-family: var(--font-body);
-      font-size: 0.68rem;
-      font-weight: 500;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-top: 4px;
-    }
-
-    /* ── Wrapper ────────────────────────────────────────── */
-    .wrapper {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 32px;
-    }
-
-    /* ── Section Tag ────────────────────────────────────── */
-    .section-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--black);
-      background: var(--sage);
-      border: var(--border);
-      padding: 5px 12px;
-      box-shadow: 3px 3px 0 var(--black);
-      margin-bottom: 24px;
-    }
-
-    /* ── MAIN TOOL ──────────────────────────────────────── */
-    .tool-section {
-      background: var(--charcoal);
-      padding: 48px 32px;
-    }
-
-    .tool-grid {
-      display: grid;
-      grid-template-columns: 400px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    /* ── Card ───────────────────────────────────────────── */
-    .card {
-      background: var(--white);
-      border: var(--border);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .card-head {
-      background: var(--charcoal);
-      padding: 18px 24px;
-      border-bottom: var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .card-head-title {
-      font-family: var(--font-head);
-      font-size: 1rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--yellow);
-    }
-
-    .card-head-badge {
-      font-family: var(--font-body);
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: var(--yellow);
-      color: var(--black);
-      border: 1.5px solid var(--black);
-      padding: 3px 8px;
-    }
-
-    .card-body { padding: 24px; }
-
-    /* ── Form Fields ────────────────────────────────────── */
-    .field { margin-bottom: 20px; }
-
-    .field-label {
-      font-family: var(--font-body);
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #333;
-      display: block;
-      margin-bottom: 7px;
-    }
-
-    .field-input {
-      width: 100%;
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--black);
-      background: var(--white);
-      border: var(--border);
-      padding: 10px 12px;
-      outline: none;
-      box-shadow: var(--shadow-inner);
-      transition: box-shadow 150ms;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-    .field-input:focus { box-shadow: 3px 3px 0 var(--black); }
-
-    select.field-input {
-      cursor: pointer;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23000'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      padding-right: 28px;
-    }
-
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-    /* ── Range ──────────────────────────────────────────── */
-    .range-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .range-val {
-      font-family: var(--font-head);
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--black);
-      background: var(--yellow);
-      border: var(--border);
-      padding: 2px 10px;
-      box-shadow: 2px 2px 0 var(--black);
-      min-width: 64px;
-      text-align: center;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 6px;
-      background: var(--black);
-      outline: none;
-      cursor: pointer;
-      margin-bottom: 4px;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px; height: 20px;
-      background: var(--yellow);
-      border: var(--border);
-      box-shadow: 2px 2px 0 var(--black);
-      cursor: pointer;
-      transition: transform 150ms;
-    }
-    input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.2); }
-
-    /* ── Run Btn ────────────────────────────────────────── */
-    .run-btn {
-      width: 100%;
-      font-family: var(--font-head);
-      font-size: 1rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
-      color: var(--yellow);
-      background: var(--charcoal);
-      border: var(--border);
-      padding: 16px;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      margin-top: 8px;
-      transition: transform 200ms var(--ease-press), box-shadow 200ms var(--ease-press);
-    }
-    .run-btn:hover  { transform: translate(4px, 4px); box-shadow: none; }
-    .run-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
-
-    /* ── Output Card ────────────────────────────────────── */
-    .output-card {
-      background: var(--white);
-      border: var(--border);
-      box-shadow: var(--shadow-lg);
-    }
-
-    /* ── Result Hero ────────────────────────────────────── */
-    .result-hero {
-      background-color: var(--yellow);
-      background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1.2px, transparent 1.2px);
-      background-size: 32px 32px;
-      border-bottom: var(--border);
-      padding: 32px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .result-days-label {
-      font-family: var(--font-body);
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #333;
-      margin-bottom: 6px;
-    }
-    .result-days {
-      font-family: var(--font-head);
-      font-size: 6rem;
-      font-weight: 800;
+      font-size: 1.1rem;
       letter-spacing: -0.05em;
-      line-height: 0.9;
-      color: var(--black);
-    }
-    .result-days sub {
-      font-size: 1.4rem;
-      font-weight: 500;
-      font-family: var(--font-body);
-      letter-spacing: 0;
-      vertical-align: baseline;
-      color: #444;
     }
 
-    .risk-badge {
+    .logo-text {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.05em;
+      color: var(--text);
+    }
+
+    .nav-tag {
+      background: var(--ui);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 6px 14px;
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+    }
+
+    /* --- Marquee / Ticker Tape --- */
+    .ticker-bar {
+      background: var(--accent);
+      border-bottom: var(--border-2px);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 10px 0;
+      user-select: none;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      animation: tickerRoll 24s linear infinite;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    @keyframes tickerRoll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* --- Main Page Container --- */
+    .container {
+      max-width: 1240px;
+      margin: 36px auto 0;
+      padding: 0 24px;
+    }
+
+    /* --- Hero Section Container --- */
+    .hero-card {
+      border: var(--border-2px);
+      box-shadow: var(--shadow-large);
+      padding: 56px 48px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ui);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 6px 14px;
       font-family: var(--font-body);
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      padding: 10px 18px;
-      border: var(--border);
-      box-shadow: var(--shadow-sm);
-      transition: transform 200ms var(--ease-press), box-shadow 200ms;
-    }
-    .risk-badge:hover { transform: translate(4px, 4px); box-shadow: none; }
-    .risk-badge.low    { background: var(--white); color: var(--black); }
-    .risk-badge.medium { background: var(--sage);  color: var(--black); }
-    .risk-badge.high   { background: var(--charcoal); color: var(--yellow); }
-
-    /* ── Chart ──────────────────────────────────────────── */
-    .chart-zone {
-      padding: 28px 32px;
-      border-bottom: var(--border);
+      margin-bottom: 24px;
     }
 
-    svg.neo-chart { width: 100%; overflow: visible; }
-
-    /* ── Factor Row ─────────────────────────────────────── */
-    .factor-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border-top: var(--border);
+    .hero-headline {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: clamp(2.8rem, 6.5vw, 5.4rem);
+      letter-spacing: -0.05em;
+      line-height: 0.95;
+      color: var(--text);
+      margin-bottom: 24px;
+      text-transform: uppercase;
     }
 
-    .factor-cell {
-      padding: 20px 24px;
-      border-right: var(--border);
-      background: var(--white);
-      cursor: default;
-      transition: background 200ms, transform 150ms;
+    .hero-headline .highlight {
+      background: var(--ui);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 0 10px;
+      display: inline-block;
+      transform: rotate(-1deg);
+      margin: 4px 0;
     }
-    .factor-cell:last-child { border-right: none; }
-    .factor-cell:hover { background: var(--yellow); }
 
-    .fc-label {
+    .hero-description {
       font-family: var(--font-body);
-      font-size: 0.65rem;
+      font-weight: 500;
+      font-size: 1.05rem;
+      color: var(--text);
+      max-width: 620px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    /* --- Standard Neo-Brutalist Buttons --- */
+    .btn {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 150ms var(--ease-press), box-shadow 150ms var(--ease-press), background-color 150ms ease;
+      user-select: none;
+    }
+
+    /* Micro-interaction: hover translate(4px, 4px) and removes shadow */
+    .btn:hover {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px 0px var(--border-color);
+    }
+
+    .btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px 0px var(--border-color);
+    }
+
+    .btn-charcoal {
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    .btn-white {
+      background: var(--ui);
+      color: var(--text);
+    }
+
+    .btn-sage {
+      background: var(--accent);
+      color: var(--text);
+    }
+
+    /* --- Key Stats Grid in Hero --- */
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-box {
+      background: var(--ui);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 20px;
+      transition: transform 150ms var(--ease-press), box-shadow 150ms var(--ease-press);
+    }
+
+    .stat-box:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+    }
+
+    .stat-number {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 2.4rem;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #333333;
+    }
+
+    /* --- Section Divider Title --- */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 40px 0 24px;
+    }
+
+    .section-title-badge {
+      background: var(--primary);
+      color: var(--text);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 8px 18px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    /* --- Engine Grid: Left Controls, Right Output --- */
+    .engine-grid {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .engine-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* --- Neo-Brutalist Cards --- */
+    .neo-card {
+      background: var(--ui);
+      border: var(--border-2px);
+      box-shadow: var(--shadow-large);
+    }
+
+    .neo-card-header {
+      background: var(--bg);
+      color: var(--primary);
+      border-bottom: var(--border-2px);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .neo-card-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+
+    .neo-card-tag {
+      background: var(--accent);
+      color: var(--text);
+      border: var(--border-2px);
+      padding: 4px 10px;
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .neo-card-body {
+      padding: 24px;
+    }
+
+    /* --- Form Elements --- */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--ui);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: var(--border-2px);
+      padding: 12px 14px;
+      outline: none;
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      box-shadow: var(--shadow-standard);
+      transform: translate(-1px, -1px);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Range Sliders */
+    .range-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .range-val-badge {
+      background: var(--primary);
+      border: var(--border-2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+      padding: 2px 10px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.04em;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 10px;
+      background: var(--accent);
+      border: var(--border-2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      border: var(--border-2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+      cursor: pointer;
+      transition: transform 100ms ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    /* Submit / Calculate Button */
+    .btn-full {
+      width: 100%;
+      justify-content: center;
+      margin-top: 8px;
+      padding: 16px;
+      font-size: 1.05rem;
+    }
+
+    /* --- Shelf Life Output Hero Panel --- */
+    .output-hero {
+      border-bottom: var(--border-2px);
+      padding: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .output-days-label {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #666;
+      color: #444444;
       margin-bottom: 6px;
     }
-    .fc-val {
-      font-family: var(--font-head);
-      font-size: 1.8rem;
+
+    .output-days-big {
+      font-family: var(--font-heading);
       font-weight: 800;
+      font-size: clamp(3.8rem, 8vw, 6.2rem);
+      letter-spacing: -0.05em;
+      line-height: 0.92;
+      color: var(--text);
+    }
+
+    .output-days-big span {
+      font-family: var(--font-body);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-left: 8px;
+      vertical-align: baseline;
+      color: #222222;
+    }
+
+    .risk-sticker {
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 10px 20px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
       letter-spacing: -0.04em;
-      color: var(--black);
+      text-transform: uppercase;
+      transition: transform 150ms var(--ease-press), box-shadow 150ms var(--ease-press);
     }
 
-    /* ── Bottom Panels ──────────────────────────────────── */
-    .bottom-section {
-      background: var(--charcoal);
-      padding: 0 32px 48px;
+    .risk-sticker:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
     }
 
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+    .risk-sticker.low {
+      background: var(--ui);
+      color: var(--text);
     }
 
-    .panel-card {
-      background: var(--white);
-      border: var(--border);
-      box-shadow: var(--shadow-lg);
+    .risk-sticker.medium {
+      background: var(--accent);
+      color: var(--text);
     }
 
-    .panel-head {
-      background-color: var(--sage);
-      border-bottom: var(--border);
-      padding: 14px 20px;
+    .risk-sticker.high {
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    /* --- Chart Container --- */
+    .chart-container {
+      padding: 28px 32px;
+      border-bottom: var(--border-2px);
+      background: var(--ui);
+    }
+
+    .chart-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .legend-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 6px;
     }
 
-    .panel-title {
-      font-family: var(--font-head);
-      font-size: 0.95rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--black);
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid var(--text);
     }
 
-    .panel-count {
+    svg.brutalist-chart {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* --- Factors Metric Strip --- */
+    .factors-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: none;
+    }
+
+    @media (max-width: 600px) {
+      .factors-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .factor-item {
+      padding: 20px;
+      border-right: var(--border-2px);
+      background: var(--ui);
+      transition: background 150ms ease;
+    }
+
+    .factor-item:last-child {
+      border-right: none;
+    }
+
+    .factor-item:hover {
+      background: var(--primary);
+    }
+
+    .factor-item-label {
       font-family: var(--font-body);
       font-size: 0.68rem;
       font-weight: 700;
-      background: var(--charcoal);
-      color: var(--yellow);
-      padding: 2px 8px;
-      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #555555;
+      margin-bottom: 4px;
     }
 
-    /* ── Recs ───────────────────────────────────────────── */
+    .factor-item-val {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.85rem;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    /* --- Bottom Grid: Recommendations & Live Shipments --- */
+    .bottom-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 32px;
+    }
+
+    @media (max-width: 860px) {
+      .bottom-two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Recommendations List */
     .rec-item {
       display: grid;
       grid-template-columns: 36px 1fr;
-      gap: 14px;
+      gap: 16px;
       align-items: start;
       padding: 16px 20px;
-      border-bottom: 1px solid #e8e8e8;
-      cursor: default;
-      transition: background 150ms, padding-left 300ms cubic-bezier(0.77,0,0.175,1);
-    }
-    .rec-item:last-child { border-bottom: none; }
-    .rec-item:hover { background: #fffbf0; padding-left: 28px; }
-
-    .rec-num {
-      font-family: var(--font-head);
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--black);
-      background: var(--yellow);
-      border: var(--border);
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 2px 2px 0 var(--black);
-      flex-shrink: 0;
+      border-bottom: var(--border-2px);
+      background: var(--ui);
+      transition: background 150ms ease, transform 150ms ease;
     }
 
-    .rec-text {
-      font-family: var(--font-body);
-      font-size: 0.83rem;
-      font-weight: 500;
-      color: #333;
-      line-height: 1.55;
-      padding-top: 6px;
+    .rec-item:last-child {
+      border-bottom: none;
     }
-    .rec-text strong { color: var(--black); font-weight: 700; }
 
-    /* ── Shipments ──────────────────────────────────────── */
-    .ship-item {
-      display: grid;
-      grid-template-columns: 10px 1fr auto;
-      gap: 14px;
+    .rec-item:hover {
+      background: #fff8d6;
+    }
+
+    .rec-index-badge {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border: var(--border-2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+      display: flex;
       align-items: center;
-      padding: 14px 20px;
-      border-bottom: 1px solid #e8e8e8;
-      cursor: default;
-      transition: background 150ms;
-    }
-    .ship-item:last-child { border-bottom: none; }
-    .ship-item:hover { background: #f5f5f5; }
-
-    .ship-dot {
-      width: 10px; height: 10px;
-      background: var(--charcoal);
-      border: var(--border);
-      flex-shrink: 0;
-    }
-    .ship-dot.warn { background: var(--sage); }
-    .ship-dot.crit {
-      background: var(--yellow);
-      box-shadow: 0 0 0 2px var(--black);
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.03em;
     }
 
-    .ship-name {
+    .rec-body-text {
       font-family: var(--font-body);
-      font-size: 0.83rem;
-      font-weight: 700;
-      color: var(--black);
-      margin-bottom: 2px;
-    }
-    .ship-meta {
-      font-family: var(--font-body);
-      font-size: 0.68rem;
-      color: #666;
-      letter-spacing: 0.02em;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+      padding-top: 4px;
     }
 
-    .ship-tag {
-      font-family: var(--font-body);
-      font-size: 0.65rem;
+    .rec-body-text strong {
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      padding: 4px 10px;
-      border: var(--border);
-      white-space: nowrap;
-      transition: transform 150ms var(--ease-press), box-shadow 150ms;
-      box-shadow: 2px 2px 0 var(--black);
-      cursor: default;
     }
-    .ship-tag:hover { transform: translate(2px, 2px); box-shadow: none; }
-    .ship-tag.ok   { background: var(--white); }
-    .ship-tag.mon  { background: var(--sage); }
-    .ship-tag.alert{ background: var(--charcoal); color: var(--yellow); }
 
-    /* ── Footer ─────────────────────────────────────────── */
+    /* Shipment Tracking Rows */
+    .shipment-row {
+      display: grid;
+      grid-template-columns: 12px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: var(--border-2px);
+      background: var(--ui);
+      transition: background 150ms ease;
+    }
+
+    .shipment-row:last-child {
+      border-bottom: none;
+    }
+
+    .shipment-row:hover {
+      background: #f7f9f8;
+    }
+
+    .ship-status-square {
+      width: 12px;
+      height: 12px;
+      border: var(--border-2px);
+    }
+
+    .ship-status-square.green { background: var(--ui); }
+    .ship-status-square.yellow { background: var(--primary); }
+    .ship-status-square.charcoal { background: var(--bg); }
+
+    .ship-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.92rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 2px;
+    }
+
+    .ship-details {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      color: #555555;
+    }
+
+    .ship-badge {
+      border: var(--border-2px);
+      box-shadow: 2px 2px 0px 0px var(--border-color);
+      padding: 4px 10px;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ship-badge.on-track { background: var(--accent); color: var(--text); }
+    .ship-badge.monitor { background: var(--primary); color: var(--text); }
+    .ship-badge.alert { background: var(--bg); color: var(--primary); }
+
+    /* --- Footer --- */
     footer {
-      background: var(--black);
-      border-top: var(--border);
-      padding: 18px 32px;
+      border: var(--border-2px);
+      box-shadow: var(--shadow-large);
+      background: var(--bg);
+      color: var(--ui);
+      padding: 24px 32px;
+      margin-top: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
     }
-    .footer-text {
-      font-family: var(--font-body);
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--sage);
-      letter-spacing: 0.03em;
-    }
-    .footer-text span { color: var(--yellow); font-weight: 700; }
 
-    /* ── Responsive ─────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-stats { flex-direction: row; flex-wrap: wrap; }
-      .tool-grid  { grid-template-columns: 1fr; }
-      .bottom-grid{ grid-template-columns: 1fr; }
-      .factor-row { grid-template-columns: repeat(3,1fr); }
+    .footer-left {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.04em;
+      color: var(--primary);
+    }
+
+    .footer-right {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
 
-  <!-- ── NAV ── -->
+  <!-- Top Navigation (Logo only per request) -->
   <nav>
     <a href="#" class="nav-logo">
-      <div class="logo-box">SS</div>
-      ShelfSense
+      <div class="logo-badge">SS</div>
+      <span class="logo-text">ShelfSense</span>
     </a>
+    <div class="nav-tag">Food Engineering Engine</div>
   </nav>
 
-  <!-- ── HERO ── -->
-  <section class="hero">
-    <div class="hero-left">
+  <!-- Marquee Ticker -->
+  <div class="ticker-bar">
+    <div class="ticker-content">
+      Predictive Shelf Life &bull; Arrhenius Kinetic Model &bull; Water Activity (Aw) &bull; pH Equilibrium &bull; Food Export Certification &bull; Zero Spoilage Protocol &bull; Packaging Barrier Simulation &bull; Real-Time Cold Chain &bull; ShelfSense v2.4.1 &bull; Predictive Shelf Life &bull; Arrhenius Kinetic Model &bull; Water Activity (Aw) &bull; pH Equilibrium &bull; Food Export Certification &bull; Zero Spoilage Protocol &bull; Packaging Barrier Simulation &bull; Real-Time Cold Chain &bull; ShelfSense v2.4.1 &bull;
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- Hero Card (Yellow with 32px x 32px Dot Pattern) -->
+    <section class="hero-card bg-yellow-dots">
+      <div class="hero-eyebrow">
+        <span>&bull;</span> Predictive Kinetics for Food Exporters
+      </div>
+
       <h1 class="hero-headline">
-        Predict<br><em>Shelf Life.</em><br>Export Smarter.
+        Stop Spoilage.<br>
+        <span class="highlight">Simulate Shelf Life</span><br>
+        Before You Ship.
       </h1>
-      <p class="hero-sub">
-        Arrhenius-calibrated shelf life modelling for food exporters. Input your formulation — get a failure risk score, decay curve, and market-specific compliance guidance. Instantly.
+
+      <p class="hero-description">
+        Developing nations lose 30&ndash;40% of packaged foods at overseas ports and customs. ShelfSense models water activity (A<sub>w</sub>), pH equilibrium, packaging gas barrier, and temperature degradation using validated Arrhenius kinetics.
       </p>
+
       <div class="hero-actions">
-        <button class="btn btn-primary" onclick="document.getElementById('tool').scrollIntoView({behavior:'smooth'})">
-          ↓ Run Prediction
+        <a href="#simulator" class="btn btn-charcoal">
+          &darr; Launch Simulator
+        </a>
+        <button class="btn btn-white" onclick="loadSample('pickle')">
+          Sample: Pickled Mango
         </button>
-        <button class="btn btn-outline">Read the Science →</button>
+        <button class="btn btn-sage" onclick="loadSample('sauce')">
+          Sample: Tomato Puree
+        </button>
       </div>
-    </div>
 
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="stat-val">2,847</div>
-        <div class="stat-label">Products Analysed</div>
-      </div>
-      <div class="hero-stat">
-        <div class="stat-val">94.2%</div>
-        <div class="stat-label">Model Accuracy</div>
-      </div>
-      <div class="hero-stat">
-        <div class="stat-val">38%</div>
-        <div class="stat-label">Spoilage Reduced</div>
-      </div>
-      <div class="hero-stat">
-        <div class="stat-val">18</div>
-        <div class="stat-label">Markets Covered</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── TOOL ── -->
-  <section class="tool-section" id="tool">
-
-    <div style="margin-bottom: 24px;">
-      <span class="section-tag">⬡ Prediction Engine</span>
-    </div>
-
-    <div class="tool-grid">
-
-      <!-- Input Card -->
-      <div class="card">
-        <div class="card-head">
-          <span class="card-head-title">Formulation Parameters</span>
-          <span class="card-head-badge">Arrhenius / Q10</span>
+      <!-- Quick Metrics Strip -->
+      <div class="hero-stats-grid">
+        <div class="stat-box">
+          <div class="stat-number">2,847</div>
+          <div class="stat-label">Batches Verified</div>
         </div>
-        <div class="card-body">
+        <div class="stat-box">
+          <div class="stat-number">94.2%</div>
+          <div class="stat-label">Lab Correlation (ASLT)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">38%</div>
+          <div class="stat-label">Less Customs Rejection</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">18</div>
+          <div class="stat-label">Export Port Norms</div>
+        </div>
+      </div>
+    </section>
 
-          <div class="field">
-            <label class="field-label">Product Name</label>
-            <input type="text" class="field-input" id="productName" value="Mango Chutney" placeholder="e.g. Tomato Paste">
+    <!-- Engine Section Header -->
+    <div class="section-divider" id="simulator">
+      <div class="section-title-badge">Formulation &amp; Stability Simulator</div>
+      <div class="section-line"></div>
+    </div>
+
+    <!-- Engine Two-Column Grid -->
+    <div class="engine-grid">
+
+      <!-- Left Input Panel -->
+      <div class="neo-card">
+        <div class="neo-card-header">
+          <span class="neo-card-title">Product Inputs</span>
+          <span class="neo-card-tag">Q10 Equation</span>
+        </div>
+        <div class="neo-card-body">
+
+          <div class="form-group">
+            <label class="form-label" for="prodName">Product Identifier</label>
+            <input type="text" id="prodName" class="form-input" value="Mango Chutney (Export Grade)" />
           </div>
 
-          <div class="field">
-            <label class="field-label">Packaging Type</label>
-            <select class="field-input" id="packaging" onchange="predict()">
-              <option value="glass">Glass Jar (Hermetic)</option>
-              <option value="pet">PET Bottle</option>
-              <option value="retort" selected>Retort Pouch</option>
-              <option value="tin">Tin Can</option>
-              <option value="modified">Modified Atmosphere</option>
+          <div class="form-group">
+            <label class="form-label" for="packagingType">Packaging Barrier</label>
+            <select id="packagingType" class="form-select" onchange="runSimulation()">
+              <option value="retort" selected>Multi-layer Retort Pouch (Alu-foil)</option>
+              <option value="glass">Glass Jar (Hermetic Lug Cap)</option>
+              <option value="tin">Lacquered Tin Can</option>
+              <option value="pet">PET Bottle (High Barrier)</option>
+              <option value="map">Modified Atmosphere (MAP Tray)</option>
             </select>
           </div>
 
-          <div class="field-row">
-            <div class="field">
-              <label class="field-label">pH Level</label>
-              <input type="number" class="field-input" id="pH" value="3.8" step="0.1" min="2" max="8" oninput="predict()">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="phVal">Acidity (pH)</label>
+              <input type="number" id="phVal" class="form-input" value="3.8" step="0.1" min="2.0" max="8.0" oninput="runSimulation()" />
             </div>
-            <div class="field">
-              <label class="field-label">Sugar (°Brix)</label>
-              <input type="number" class="field-input" id="brix" value="42" step="0.5" min="0" max="100" oninput="predict()">
+            <div class="form-group">
+              <label class="form-label" for="brixVal">Sugar (&deg;Brix)</label>
+              <input type="number" id="brixVal" class="form-input" value="42" step="0.5" min="0" max="100" oninput="runSimulation()" />
             </div>
           </div>
 
-          <div class="field" style="margin-bottom:24px;">
-            <div class="range-head">
-              <label class="field-label" style="margin:0">Water Activity (Aᵥᵥ)</label>
-              <span class="range-val" id="awDisplay">0.82</span>
+          <div class="form-group">
+            <div class="range-header">
+              <label class="form-label" style="margin:0" for="awRange">Water Activity (A<sub>w</sub>)</label>
+              <span class="range-val-badge" id="awValBadge">0.82</span>
             </div>
-            <input type="range" id="aw" min="0.5" max="0.99" step="0.01" value="0.82"
-                   oninput="document.getElementById('awDisplay').textContent=parseFloat(this.value).toFixed(2); predict()">
+            <input type="range" id="awRange" min="0.50" max="0.99" step="0.01" value="0.82"
+                   oninput="document.getElementById('awValBadge').textContent = parseFloat(this.value).toFixed(2); runSimulation();" />
           </div>
 
-          <div class="field" style="margin-bottom:24px;">
-            <div class="range-head">
-              <label class="field-label" style="margin:0">Storage Temp (°C)</label>
-              <span class="range-val" id="tempDisplay">25°C</span>
+          <div class="form-group">
+            <div class="range-header">
+              <label class="form-label" style="margin:0" for="tempRange">Logistics Storage Temp (&deg;C)</label>
+              <span class="range-val-badge" id="tempValBadge">25&deg;C</span>
             </div>
-            <input type="range" id="temp" min="0" max="45" step="1" value="25"
-                   oninput="document.getElementById('tempDisplay').textContent=this.value+'°C'; predict()">
+            <input type="range" id="tempRange" min="0" max="45" step="1" value="25"
+                   oninput="document.getElementById('tempValBadge').textContent = this.value + '&deg;C'; runSimulation();" />
           </div>
 
-          <div class="field">
-            <label class="field-label">Destination Market</label>
-            <select class="field-input" id="market" onchange="predict()">
-              <option value="eu">European Union</option>
-              <option value="us" selected>United States</option>
-              <option value="gcc">Gulf (GCC)</option>
-              <option value="sea">Southeast Asia</option>
-              <option value="uk">United Kingdom</option>
+          <div class="form-group">
+            <label class="form-label" for="exportMarket">Target Destination Market</label>
+            <select id="exportMarket" class="form-select" onchange="runSimulation()">
+              <option value="us" selected>United States (FDA 21 CFR 114)</option>
+              <option value="eu">European Union (EFSA Reg. 178/2002)</option>
+              <option value="gcc">Gulf States (GSO 150-1/2013)</option>
+              <option value="sea">Southeast Asia (ASEAN Food Standards)</option>
+              <option value="uk">United Kingdom (UK FSA)</option>
             </select>
           </div>
 
-          <button class="run-btn" onclick="predict()">⚡ Run Prediction</button>
+          <button class="btn btn-charcoal btn-full" onclick="runSimulation()">
+            &bull; Compute Shelf Stability
+          </button>
         </div>
       </div>
 
-      <!-- Output Card -->
-      <div class="output-card">
+      <!-- Right Output Panel -->
+      <div class="neo-card">
 
-        <!-- Result Hero -->
-        <div class="result-hero">
+        <!-- Top Output Hero: Days + Risk Pill -->
+        <div class="output-hero bg-yellow-dots">
           <div>
-            <div class="result-days-label">Predicted Shelf Life</div>
-            <div class="result-days" id="shelfDays">284<sub>days</sub></div>
+            <div class="output-days-label">Estimated Export Shelf Life</div>
+            <div class="output-days-big" id="daysDisplay">284<span>DAYS</span></div>
           </div>
-          <span class="risk-badge low" id="riskBadge">✓ Low Risk</span>
+          <div>
+            <div class="risk-sticker low" id="riskSticker">&check; Low Risk</div>
+          </div>
         </div>
 
-        <!-- Chart -->
-        <div class="chart-zone">
-          <svg class="neo-chart" viewBox="0 0 640 160" id="chart">
-            <defs>
-              <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                <line x1="0" y1="0" x2="0" y2="6" stroke="#ffe17c" stroke-width="2"/>
-              </pattern>
-            </defs>
+        <!-- SVG Decay Curve -->
+        <div class="chart-container">
+          <div class="chart-title-bar">
+            <div class="chart-title">Arrhenius First-Order Quality Decay Rate</div>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-box" style="background:#000;"></div> Quality %</div>
+              <div class="legend-item"><div class="legend-box" style="background:var(--accent);"></div> Threshold</div>
+            </div>
+          </div>
 
-            <!-- Grid lines -->
-            <line x1="0" y1="30"  x2="640" y2="30"  stroke="#e0e0e0" stroke-width="1"/>
-            <line x1="0" y1="75"  x2="640" y2="75"  stroke="#e0e0e0" stroke-width="1"/>
-            <line x1="0" y1="120" x2="640" y2="120" stroke="#e0e0e0" stroke-width="1"/>
+          <svg class="brutalist-chart" viewBox="0 0 640 160" id="decayChart">
+            <!-- Grid Lines -->
+            <line x1="0" y1="35"  x2="640" y2="35"  stroke="#000000" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
+            <line x1="0" y1="75"  x2="640" y2="75"  stroke="#000000" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
+            <line x1="0" y1="115" x2="640" y2="115" stroke="#000000" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
 
-            <!-- Threshold -->
-            <rect x="0" y="128" width="640" height="16" fill="url(#hatch)" opacity="0.5"/>
-            <line x1="0" y1="128" x2="640" y2="128" stroke="#000" stroke-width="1.5" stroke-dasharray="5 3"/>
-            <text x="4" y="123" fill="#888" font-size="9" font-family="'Satoshi',sans-serif" font-weight="700" letter-spacing="0.05em">SPOILAGE THRESHOLD</text>
+            <!-- Critical Spoilage Threshold -->
+            <line x1="0" y1="125" x2="640" y2="125" stroke="#000000" stroke-width="2" stroke-dasharray="6 4"/>
+            <text x="6" y="120" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="9" text-transform="uppercase" letter-spacing="0.08em">SPOILAGE CUTOFF (20% RETENTION)</text>
 
-            <!-- Y labels -->
-            <text x="0"   y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" font-weight="500">0</text>
-            <text x="144" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL1">60d</text>
-            <text x="300" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL2">120d</text>
-            <text x="456" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL3">180d</text>
-            <text x="608" y="155" fill="#aaa" font-size="10" font-family="'Satoshi',sans-serif" id="xL4">240d</text>
+            <!-- X-Axis Marks -->
+            <text x="0"   y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10">DAY 0</text>
+            <text x="150" y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10" id="xMark1">60D</text>
+            <text x="310" y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10" id="xMark2">120D</text>
+            <text x="470" y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10" id="xMark3">180D</text>
+            <text x="600" y="152" fill="#000000" font-family="'Satoshi',sans-serif" font-weight="700" font-size="10" id="xMark4">240D</text>
 
-            <!-- Area fill -->
-            <path id="areaPath" fill="#ffe17c" opacity="0.3"/>
-            <!-- Line -->
-            <path id="curvePath" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="square"/>
+            <!-- Fill Area under Curve -->
+            <path id="curveArea" fill="#ffe17c" opacity="0.35"/>
 
-            <!-- Square data dots -->
-            <rect id="d1" width="8" height="8" fill="#ffe17c" stroke="#000" stroke-width="2"/>
-            <rect id="d2" width="8" height="8" fill="#ffe17c" stroke="#000" stroke-width="2"/>
-            <rect id="d3" width="8" height="8" fill="#ffe17c" stroke="#000" stroke-width="2"/>
+            <!-- Main Decay Path -->
+            <path id="curvePath" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="square"/>
 
-            <!-- End marker -->
-            <rect id="endDot" width="12" height="12" fill="#171e19" stroke="#000" stroke-width="2"/>
-            <text id="endLabel" fill="#000" font-size="11" font-family="'Cabinet Grotesk',sans-serif" font-weight="800" dy="-10" text-anchor="middle"/>
+            <!-- ASLT Data Markers (Brutalist Squares) -->
+            <rect id="marker1" width="8" height="8" fill="#ffe17c" stroke="#000000" stroke-width="2"/>
+            <rect id="marker2" width="8" height="8" fill="#ffe17c" stroke="#000000" stroke-width="2"/>
+            <rect id="marker3" width="8" height="8" fill="#ffe17c" stroke="#000000" stroke-width="2"/>
+
+            <!-- Terminal End Marker -->
+            <rect id="endSquare" width="14" height="14" fill="#171e19" stroke="#000000" stroke-width="2"/>
+            <text id="endText" fill="#000000" font-family="'Cabinet Grotesk',sans-serif" font-weight="800" font-size="12" dy="-10" text-anchor="middle">284d</text>
           </svg>
         </div>
 
-        <!-- Factor Row -->
-        <div class="factor-row">
-          <div class="factor-cell">
-            <div class="fc-label">Water Activity</div>
-            <div class="fc-val" id="factorAw">0.82</div>
+        <!-- Metric Readout Strip -->
+        <div class="factors-grid">
+          <div class="factor-item">
+            <div class="factor-item-label">Water Activity</div>
+            <div class="factor-item-val" id="metricAw">0.82</div>
           </div>
-          <div class="factor-cell" style="border-right: var(--border);">
-            <div class="fc-label">pH Level</div>
-            <div class="fc-val" id="factorPH">3.8</div>
+          <div class="factor-item">
+            <div class="factor-item-label">Equilibrium pH</div>
+            <div class="factor-item-val" id="metricPh">3.8</div>
           </div>
-          <div class="factor-cell">
-            <div class="fc-label">Temperature</div>
-            <div class="fc-val" id="factorTemp">25°C</div>
+          <div class="factor-item">
+            <div class="factor-item-label">Arrhenius Stress</div>
+            <div class="factor-item-val" id="metricTemp">25&deg;C</div>
           </div>
         </div>
 
       </div>
     </div>
-  </section>
 
-  <!-- ── BOTTOM PANELS ── -->
-  <section class="bottom-section">
+    <!-- Recommendations & Live Shipments -->
+    <div class="bottom-two-col">
 
-    <div style="margin-bottom: 24px; padding-top: 8px;">
-      <span class="section-tag">⬡ Analysis &amp; Monitoring</span>
-    </div>
-
-    <div class="bottom-grid">
-
-      <!-- Recs -->
-      <div class="panel-card">
-        <div class="panel-head">
-          <span class="panel-title">Recommendations</span>
-          <span class="panel-count" id="recCount">02 ITEMS</span>
+      <!-- Recommendations -->
+      <div class="neo-card">
+        <div class="neo-card-header" style="background:var(--accent); color:var(--text);">
+          <span class="neo-card-title">Engineering Advisory</span>
+          <span class="neo-card-tag" id="recBadgeCount">03 ADVISORIES</span>
         </div>
-        <div id="recList"></div>
+        <div id="recContainer"></div>
       </div>
 
-      <!-- Shipments -->
-      <div class="panel-card">
-        <div class="panel-head">
-          <span class="panel-title">Live Shipments</span>
-          <span class="panel-count">04 ACTIVE</span>
+      <!-- Live Shipments Tracker -->
+      <div class="neo-card">
+        <div class="neo-card-header" style="background:var(--accent); color:var(--text);">
+          <span class="neo-card-title">Live Port Watchlist</span>
+          <span class="neo-card-tag">IoT TELEMETRY</span>
         </div>
-        <div class="ship-item">
-          <div class="ship-dot"></div>
+
+        <div class="shipment-row">
+          <div class="ship-status-square green"></div>
           <div>
-            <div class="ship-name">Mango Chutney — Dubai Port</div>
-            <div class="ship-meta">22°C · 58% RH · Day 12 / 180</div>
+            <div class="ship-title">Mango Chutney &mdash; Jebel Ali Port, UAE</div>
+            <div class="ship-details">Temp: 22&deg;C &bull; RH: 58% &bull; Elapsed: Day 14 / 180</div>
           </div>
-          <span class="ship-tag ok">On Track</span>
+          <span class="ship-badge on-track">On Track</span>
         </div>
-        <div class="ship-item">
-          <div class="ship-dot warn"></div>
+
+        <div class="shipment-row">
+          <div class="ship-status-square yellow"></div>
           <div>
-            <div class="ship-name">Tomato Paste — Rotterdam</div>
-            <div class="ship-meta">31°C · 74% RH · Day 45 / 365</div>
+            <div class="ship-title">Tomato Puree &mdash; Rotterdam, Netherlands</div>
+            <div class="ship-details">Temp: 31&deg;C (Spike) &bull; RH: 74% &bull; Elapsed: Day 42 / 365</div>
           </div>
-          <span class="ship-tag mon">Monitor</span>
+          <span class="ship-badge monitor">Monitor</span>
         </div>
-        <div class="ship-item">
-          <div class="ship-dot crit"></div>
+
+        <div class="shipment-row">
+          <div class="ship-status-square charcoal"></div>
           <div>
-            <div class="ship-name">Dried Shrimp — LA Customs</div>
-            <div class="ship-meta">38°C · 82% RH · Day 78 / 120</div>
+            <div class="ship-title">Dried Shrimp &mdash; Port of Los Angeles, USA</div>
+            <div class="ship-details">Temp: 38&deg;C &bull; RH: 82% &bull; Elapsed: Day 80 / 120</div>
           </div>
-          <span class="ship-tag alert">⚠ Alert</span>
+          <span class="ship-badge alert">&excl; Warning</span>
         </div>
-        <div class="ship-item">
-          <div class="ship-dot"></div>
+
+        <div class="shipment-row">
+          <div class="ship-status-square green"></div>
           <div>
-            <div class="ship-name">Coconut Oil — Singapore</div>
-            <div class="ship-meta">28°C · 65% RH · Day 5 / 540</div>
+            <div class="ship-title">Virgin Coconut Oil &mdash; Port of Singapore</div>
+            <div class="ship-details">Temp: 26&deg;C &bull; RH: 65% &bull; Elapsed: Day 7 / 540</div>
           </div>
-          <span class="ship-tag ok">On Track</span>
+          <span class="ship-badge on-track">On Track</span>
         </div>
       </div>
 
     </div>
-  </section>
 
-  <!-- ── FOOTER ── -->
-  <footer>
-    <div class="footer-text">© 2026 <span>ShelfSense</span> — Built for food engineers.</div>
-    <div class="footer-text">v2.4.1 · Arrhenius / Q10 Model</div>
-  </footer>
+    <!-- Footer -->
+    <footer>
+      <div class="footer-left">
+        SHELLFSENSE &bull; PREDICTIVE SHELF LIFE ENGINE
+      </div>
+      <div class="footer-right">
+        Formulated with Arrhenius &amp; Q10 Kinetic Equations &bull; v2.4.1
+      </div>
+    </footer>
 
-<script>
-  function predict() {
-    const aw   = parseFloat(document.getElementById('aw').value);
-    const temp = parseFloat(document.getElementById('temp').value);
-    const pH   = parseFloat(document.getElementById('pH').value);
-    const pkg  = document.getElementById('packaging').value;
-    const mkt  = document.getElementById('market').value;
+  </main>
 
-    const pkgBase = { glass:540, tin:480, retort:360, pet:220, modified:180 };
-    let days = pkgBase[pkg] || 300;
+  <script>
+    /* Food Engineering Kinetic Model */
+    function runSimulation() {
+      const aw   = parseFloat(document.getElementById('awRange').value);
+      const temp = parseFloat(document.getElementById('tempRange').value);
+      const pH   = parseFloat(document.getElementById('phVal').value) || 4.0;
+      const pkg  = document.getElementById('packagingType').value;
+      const mkt  = document.getElementById('exportMarket').value;
 
-    const awFactor = 1 - Math.pow((aw - 0.5) / 0.5, 1.8);
-    days *= 0.3 + 0.7 * awFactor;
+      // Base shelf days from packaging material moisture/oxygen transmission
+      const pkgBaseDays = {
+        glass: 540,
+        tin: 480,
+        retort: 380,
+        pet: 220,
+        map: 170
+      };
+      let days = pkgBaseDays[pkg] || 300;
 
-    const phFactor = pH < 4.6 ? 1.3 - (pH - 2) * 0.05 : 1 - (pH - 4.6) * 0.12;
-    days *= phFactor;
+      // Water Activity (Aw) exponential inhibition
+      const awFactor = 1.0 - Math.pow((aw - 0.50) / 0.50, 1.85);
+      days *= (0.25 + 0.75 * Math.max(0.05, awFactor));
 
-    days *= Math.pow(2, -(temp - 25) / 10);
+      // pH effect: < 4.6 acid prevents C. botulinum and fungal proliferation
+      const phFactor = pH < 4.6
+        ? 1.25 - (pH - 2.0) * 0.05
+        : 1.00 - (pH - 4.6) * 0.16;
+      days *= Math.max(0.3, phFactor);
 
-    const mktBuffer = { eu:0.85, us:0.90, gcc:0.92, sea:0.95, uk:0.87 };
-    days *= mktBuffer[mkt] || 0.9;
-    days = Math.max(30, Math.round(days));
+      // Arrhenius Q10 temperature acceleration factor (Q10 = 2.0 standard for food reactions)
+      const q10 = 2.0;
+      const tempAccFactor = Math.pow(q10, -(temp - 25.0) / 10.0);
+      days *= tempAccFactor;
 
-    let risk, riskClass, riskIcon;
-    if      (days > 180) { risk = 'Low Risk';    riskClass = 'low';    riskIcon = '✓'; }
-    else if (days > 90)  { risk = 'Medium Risk'; riskClass = 'medium'; riskIcon = '⚠'; }
-    else                 { risk = 'High Risk';   riskClass = 'high';   riskIcon = '✕'; }
+      // Market regulatory compliance margin
+      const marketBuffer = { eu: 0.85, us: 0.90, gcc: 0.92, sea: 0.95, uk: 0.88 };
+      days *= (marketBuffer[mkt] || 0.90);
 
-    document.getElementById('shelfDays').innerHTML = `${days}<sub>days</sub>`;
+      days = Math.max(25, Math.round(days));
 
-    const badge = document.getElementById('riskBadge');
-    badge.textContent = riskIcon + ' ' + risk;
-    badge.className   = 'risk-badge ' + riskClass;
+      // Update days and risk classification
+      let riskLabel = 'Low Risk';
+      let riskClass = 'low';
 
-    document.getElementById('factorAw').textContent   = aw.toFixed(2);
-    document.getElementById('factorPH').textContent   = pH;
-    document.getElementById('factorTemp').textContent = temp + '°C';
+      if (days > 180) {
+        riskLabel = '✓ Low Risk';
+        riskClass = 'low';
+      } else if (days > 90) {
+        riskLabel = '⚠ Moderate';
+        riskClass = 'medium';
+      } else {
+        riskLabel = '✕ High Risk';
+        riskClass = 'high';
+      }
 
-    drawCurve(days);
-    buildRecs(aw, pH, temp, pkg, days, risk);
-  }
+      document.getElementById('daysDisplay').innerHTML = `${days}<span>DAYS</span>`;
 
-  function drawCurve(days) {
-    const W = 640, H = 128;
-    const maxDays = Math.max(days * 1.15, 100);
-    const k = Math.log(5) / days;
+      const sticker = document.getElementById('riskSticker');
+      sticker.textContent = riskLabel;
+      sticker.className = 'risk-sticker ' + riskClass;
 
-    const pts = [];
-    for (let i = 0; i <= 80; i++) {
-      const t = (i / 80) * maxDays;
-      const x = (t / maxDays) * W;
-      const q = Math.exp(-k * t);
-      const y = H - (q * (H - 28)) - 4;
-      pts.push([x, y]);
+      // Update factor readouts
+      document.getElementById('metricAw').textContent   = aw.toFixed(2);
+      document.getElementById('metricPh').textContent   = pH.toFixed(1);
+      document.getElementById('metricTemp').textContent = temp + '°C';
+
+      // Update decay curve and advisory notes
+      renderCurve(days);
+      renderAdvisory(aw, pH, temp, pkg, days);
     }
 
-    const d = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
-    document.getElementById('curvePath').setAttribute('d', d);
-    document.getElementById('areaPath').setAttribute('d', d + ` L${W},${H} L0,${H} Z`);
+    /* SVG Decay Curve Rendering */
+    function renderCurve(days) {
+      const W = 640;
+      const H = 125;
+      const maxDays = Math.max(days * 1.18, 90);
+      const k = Math.log(5.0) / days; // Rate constant for 80% degradation
 
-    // End dot
-    const ex = (days / maxDays) * W;
-    const ey = H - (Math.exp(-k * days) * (H - 28)) - 4;
-    const ed = document.getElementById('endDot');
-    ed.setAttribute('x', ex - 6); ed.setAttribute('y', ey - 6);
-    const el = document.getElementById('endLabel');
-    el.setAttribute('x', ex); el.setAttribute('y', ey);
-    el.textContent = days + 'd';
+      const points = [];
+      const steps = 70;
+      for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * maxDays;
+        const x = (t / maxDays) * W;
+        const quality = Math.exp(-k * t);
+        const y = H - (quality * (H - 25)) - 4;
+        points.push([x, y]);
+      }
 
-    // Study dots
-    [0.2, 0.45, 0.75].forEach((frac, i) => {
-      const t = frac * maxDays;
-      const q = Math.exp(-k * t);
-      const sx = frac * W - 4;
-      const sy = H - (q * (H - 28)) - 4 - 4;
-      document.getElementById(['d1','d2','d3'][i]).setAttribute('x', sx);
-      document.getElementById(['d1','d2','d3'][i]).setAttribute('y', sy);
-    });
+      const d = points.map((pt, idx) => (idx === 0 ? 'M' : 'L') + pt[0].toFixed(1) + ',' + pt[1].toFixed(1)).join(' ');
+      document.getElementById('curvePath').setAttribute('d', d);
+      document.getElementById('curveArea').setAttribute('d', d + ` L${W},${H} L0,${H} Z`);
 
-    const step = Math.round(maxDays / 4 / 10) * 10;
-    ['xL1','xL2','xL3','xL4'].forEach((id, i) => {
-      document.getElementById(id).textContent = (step*(i+1)) + 'd';
-    });
-  }
+      // Terminal end marker (day = calculated shelf life)
+      const endX = (days / maxDays) * W;
+      const endY = H - (Math.exp(-k * days) * (H - 25)) - 4;
 
-  function buildRecs(aw, pH, temp, pkg, days, risk) {
-    const items = [];
-    if (aw > 0.85)  items.push(`<strong>Critical —</strong> Aᵥᵥ ${aw.toFixed(2)} exceeds safe threshold. Add humectants (glycerol, sorbitol) or upgrade moisture barrier packaging.`);
-    if (pH > 4.6)   items.push(`<strong>Formulation —</strong> pH ${pH} is above 4.6. Not classified as acidified food. Add citric acid to reach safe Aw-pH combination.`);
-    if (temp > 30)  items.push(`<strong>Logistics —</strong> ${temp}°C reduces shelf life by ~${Math.round((1-Math.pow(2,-(temp-25)/10))*100)}%. Cold-chain shipping required.`);
-    if (pkg === 'pet' && days < 150) items.push(`<strong>Packaging —</strong> Upgrade from PET to retort pouch or glass jar for +60–120 additional days.`);
-    if (days > 180) items.push(`<strong>Compliance —</strong> Product qualifies for all target markets. Validate with ASLT at 40°C / 75% RH for 12 weeks.`);
-    if (items.length === 0) items.push(`<strong>Stable —</strong> All parameters within safe range. Proceed to accelerated shelf life validation study (ASLT).`);
+      const endSquare = document.getElementById('endSquare');
+      endSquare.setAttribute('x', endX - 7);
+      endSquare.setAttribute('y', endY - 7);
 
-    document.getElementById('recCount').textContent =
-      String(items.length).padStart(2,'0') + ' ITEM' + (items.length !== 1 ? 'S' : '');
+      const endText = document.getElementById('endText');
+      endText.setAttribute('x', endX);
+      endText.setAttribute('y', endY);
+      endText.textContent = days + 'd';
 
-    document.getElementById('recList').innerHTML = items.map((txt, i) =>
-      `<div class="rec-item">
-        <div class="rec-num">${String(i+1).padStart(2,'0')}</div>
-        <div class="rec-text">${txt}</div>
-      </div>`
-    ).join('');
-  }
+      // 3 intermediate study checkpoints
+      [0.22, 0.48, 0.76].forEach((fraction, idx) => {
+        const t = fraction * maxDays;
+        const q = Math.exp(-k * t);
+        const sx = fraction * W - 4;
+        const sy = H - (q * (H - 25)) - 4 - 4;
+        const marker = document.getElementById('marker' + (idx + 1));
+        marker.setAttribute('x', sx);
+        marker.setAttribute('y', sy);
+      });
 
-  predict();
-</script>
+      // X-axis day markings
+      const stepDays = Math.round(maxDays / 4 / 10) * 10;
+      ['xMark1', 'xMark2', 'xMark3', 'xMark4'].forEach((id, idx) => {
+        document.getElementById(id).textContent = (stepDays * (idx + 1)) + 'D';
+      });
+    }
+
+    /* Food Safety & Formulation Advisories */
+    function renderAdvisory(aw, pH, temp, pkg, days) {
+      const advisories = [];
+
+      if (aw > 0.85) {
+        advisories.push(`<strong>Water Activity Alert &mdash;</strong> A<sub>w</sub> ${aw.toFixed(2)} supports Staphylococcus aureus and osmophilic yeast proliferation. Incorporate food-grade humectants (glycerol, maltodextrin) or reduce moisture content.`);
+      }
+
+      if (pH > 4.6) {
+        advisories.push(`<strong>Equilibrium pH Violation &mdash;</strong> Formulation pH ${pH.toFixed(1)} exceeds 4.6 (FDA Acidified Food Threshold). Product requires high-pressure processing or retorting to prevent Clostridium botulinum spore outgrowth.`);
+      }
+
+      if (temp > 30) {
+        advisories.push(`<strong>Thermal Acceleration &mdash;</strong> Ambient shipment at ${temp}&deg;C accelerates oxidation and Maillard browning by ${Math.round((Math.pow(2, (temp - 25)/10) - 1) * 100)}%. Mandatory refrigerated reefers (15&ndash;18&deg;C) advised.`);
+      }
+
+      if (pkg === 'pet' && days < 160) {
+        advisories.push(`<strong>Gas Barrier Deficiency &mdash;</strong> High O<sub>2</sub> permeability in PET accelerates flavor loss. Transition to aluminum foil retort laminate for +90&ndash;140 days shelf extension.`);
+      }
+
+      if (days >= 180) {
+        advisories.push(`<strong>Compliance Target Met &mdash;</strong> Formulation fulfills sea freight transit + retail distribution standard for target market. Schedule accelerated 12-week ASLT verification.`);
+      }
+
+      if (advisories.length === 0) {
+        advisories.push(`<strong>Stable Parameters &mdash;</strong> Formulation, barrier, and thermal profile within acceptable stability threshold.`);
+      }
+
+      document.getElementById('recBadgeCount').textContent =
+        String(advisories.length).padStart(2, '0') + ' ADVISOR' + (advisories.length === 1 ? 'Y' : 'IES');
+
+      document.getElementById('recContainer').innerHTML = advisories.map((text, idx) => `
+        <div class="rec-item">
+          <div class="rec-index-badge">${String(idx + 1).padStart(2, '0')}</div>
+          <div class="rec-body-text">${text}</div>
+        </div>
+      `).join('');
+    }
+
+    /* Preset Sample Formulations */
+    function loadSample(type) {
+      if (type === 'pickle') {
+        document.getElementById('prodName').value = 'Green Mango Pickle in Mustard Oil';
+        document.getElementById('packagingType').value = 'glass';
+        document.getElementById('phVal').value = 3.4;
+        document.getElementById('brixVal').value = 28;
+        document.getElementById('awRange').value = 0.74;
+        document.getElementById('awValBadge').textContent = '0.74';
+        document.getElementById('tempRange').value = 24;
+        document.getElementById('tempValBadge').textContent = '24°C';
+      } else if (type === 'sauce') {
+        document.getElementById('prodName').value = 'Double-Concentrated Tomato Paste';
+        document.getElementById('packagingType').value = 'tin';
+        document.getElementById('phVal').value = 4.2;
+        document.getElementById('brixVal').value = 30;
+        document.getElementById('awRange').value = 0.88;
+        document.getElementById('awValBadge').textContent = '0.88';
+        document.getElementById('tempRange').value = 28;
+        document.getElementById('tempValBadge').textContent = '28°C';
+      }
+      runSimulation();
+    }
+
+    // Initial calculation on load
+    runSimulation();
+  </script>
 </body>
 </html>
