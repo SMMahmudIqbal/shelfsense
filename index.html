@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="author" content="S. M. Mahmud Iqbal" />
+  <meta name="description" content="ShelfSense — free shelf-life simulator for food exporters. Arrhenius (Ea/Q10) kinetics, water activity, pH, real packaging barrier data (OTR/WVTR), spoilage-mode models, ASLT test planner and an export screening certificate." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ShelfSense — Predictive Shelf Life Engine" />
+  <meta property="og:description" content="Simulate shelf life before you ship: Arrhenius kinetics, Aw, pH, packaging barrier data and an export screening certificate." />
+  <meta property="og:url" content="https://shelfsense-lemon.vercel.app/" />
+  <meta property="og:image" content="https://shelfsense-lemon.vercel.app/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ffe17c'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='26' font-weight='800' text-anchor='middle' fill='%23000'%3ESS%3C/text%3E%3C/svg%3E" />
   <title>ShelfSense — Predictive Shelf Life Engine</title>
 
   <!-- Fonts: Cabinet Grotesk (800, 700, 400) & Satoshi (700, 500, 400) -->
@@ -39,6 +47,59 @@
 
     html {
       scroll-behavior: smooth;
+    }
+
+    /* --- v3 additions: notes, warnings, advanced panels, focus --- */
+    .form-note {
+      font-size: 0.72rem;
+      color: #444;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    .warn-box {
+      display: none;
+      background: #ffe1db;
+      border: var(--border-2px);
+      box-shadow: var(--shadow-standard);
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.45;
+      margin: 10px 0;
+    }
+    .warn-box.show { display: block; }
+    .advanced-box {
+      border: var(--border-2px);
+      background: #f4f4f0;
+      padding: 10px 12px;
+      margin: 4px 0 14px 0;
+    }
+    .advanced-box summary {
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .advanced-box .form-group { margin-top: 10px; }
+    .aslt-lines { font-size: 0.8rem; line-height: 1.6; margin-top: 8px; }
+    .cert-watermark {
+      display: none;
+      border: 3px solid #b00020;
+      color: #b00020;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+      padding: 8px;
+      margin: 12px 0;
+    }
+    .cert-watermark.show { display: block; }
+    .cert-disclaimer { font-size: 0.7rem; color: #555; margin-top: 10px; line-height: 1.5; }
+    *:focus-visible {
+      outline: 3px solid #000000 !important;
+      outline-offset: 2px;
     }
 
     body {
@@ -1347,7 +1408,7 @@
       </h1>
 
       <p class="hero-description">
-        Developing nations lose 30&ndash;40% of packaged foods at overseas ports and customs. ShelfSense models water activity (A<sub>w</sub>), pH equilibrium, packaging gas barrier, and temperature degradation using validated Arrhenius kinetics.
+        Developing nations lose 30&ndash;40% of packaged foods at overseas ports and customs. ShelfSense models water activity (A<sub>w</sub>), pH equilibrium, packaging gas barrier, and temperature degradation using Arrhenius kinetics with activation-energy (Ea) based Q10 values.
       </p>
 
       <div class="hero-actions">
@@ -1368,20 +1429,20 @@
       <!-- Quick Metrics Strip -->
       <div class="hero-stats-grid">
         <div class="stat-box">
-          <div class="stat-number">2,847</div>
-          <div class="stat-label">Batches Verified</div>
+          <div class="stat-number">5</div>
+          <div class="stat-label">Packaging Profiles (OTR / WVTR Data)</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">94.2%</div>
-          <div class="stat-label">Lab Correlation (ASLT)</div>
+          <div class="stat-number">5</div>
+          <div class="stat-label">Export Markets Screened</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">38%</div>
-          <div class="stat-label">Less Customs Rejection</div>
+          <div class="stat-number">4</div>
+          <div class="stat-label">Spoilage Modes Modelled</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">18</div>
-          <div class="stat-label">Export Port Norms</div>
+          <div class="stat-number">2</div>
+          <div class="stat-label">Sample Formulations Built In</div>
         </div>
       </div>
     </section>
@@ -1406,7 +1467,7 @@
       <div class="neo-card">
         <div class="neo-card-header">
           <span class="neo-card-title" id="inputPanelTitle">Formula A Parameters</span>
-          <span class="neo-card-tag">Q10 Equation</span>
+          <span class="neo-card-tag">Arrhenius / Q10</span>
         </div>
         <div class="neo-card-body">
 
@@ -1425,6 +1486,7 @@
               <option value="pet">PET Bottle (Standard Barrier)</option>
               <option value="map">Modified Atmosphere (MAP Tray)</option>
             </select>
+            <div class="form-note" id="pkgNote"></div>
           </div>
 
           <div class="form-row">
@@ -1437,6 +1499,8 @@
               <input type="number" id="brixVal" class="form-input" value="42" step="0.5" min="0" max="100" oninput="runSimulation()" />
             </div>
           </div>
+
+          <div class="warn-box" id="phWarning"></div>
 
           <div class="form-group">
             <div class="range-header">
@@ -1454,6 +1518,18 @@
             </div>
             <input type="range" id="tempRange" min="0" max="45" step="1" value="25"
                    oninput="document.getElementById('tempValBadge').textContent = this.value + '&deg;C'; runSimulation();" />
+            <div class="form-note" id="tempNote"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="failMode">What spoils first? (best guess is fine)</label>
+            <select id="failMode" class="form-select" onchange="runSimulation()">
+              <option value="auto" selected>Not sure — balanced estimate</option>
+              <option value="microbial">Microbial growth (mould / bacteria)</option>
+              <option value="oxidation">Oxidation / rancidity (oils &amp; fats)</option>
+              <option value="moisture">Moisture change (drying / sogginess)</option>
+              <option value="colour">Colour &amp; flavour loss</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -1465,7 +1541,27 @@
               <option value="sea">Southeast Asia (ASEAN Food Standards)</option>
               <option value="uk">United Kingdom (UK FSA)</option>
             </select>
+            <div class="form-note" id="marketNote"></div>
           </div>
+
+          <details class="advanced-box">
+            <summary>Advanced (optional) — measured shelf life &amp; Ea</summary>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="anchorDays">Known shelf life (days)</label>
+                <input type="number" id="anchorDays" class="form-input" placeholder="e.g. 180" min="0" step="1" oninput="runSimulation()" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="anchorTemp">Measured at (&deg;C)</label>
+                <input type="number" id="anchorTemp" class="form-input" value="25" step="1" oninput="runSimulation()" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="eaCustom">Activation energy Ea (kJ/mol) — blank = preset</label>
+              <input type="number" id="eaCustom" class="form-input" placeholder="Preset" min="10" max="250" step="1" oninput="runSimulation()" />
+            </div>
+            <div class="form-note">If you have a real measured shelf life (lab or experience), enter it — ShelfSense then only shifts it to your storage temperature (ASLT anchor mode). Everything else stays automatic.</div>
+          </details>
 
           <!-- Formula B Sub-Panel (Shows in Compare Mode) -->
           <div class="compare-subpanel" id="formulaBPanel">
@@ -1473,6 +1569,8 @@
               <span>Formula B (Reformulated)</span>
               <span class="compare-badge-pill">Optimized Option</span>
             </div>
+
+            <div class="form-note" style="margin-bottom:10px;">Formula B is tested at Formula A's storage temperature and market — only packaging, pH, &deg;Brix and A<sub>w</sub> differ.</div>
 
             <div class="form-group">
               <label class="form-label" for="packagingTypeB">Packaging Barrier (Formula B)</label>
@@ -1491,6 +1589,14 @@
                 <input type="number" id="phValB" class="form-input" value="3.4" step="0.1" min="2.0" max="8.0" oninput="runSimulation()" />
               </div>
               <div class="form-group">
+                <label class="form-label" for="brixValB">Sugar &deg;Brix (Formula B)</label>
+                <input type="number" id="brixValB" class="form-input" value="36" step="0.5" min="0" max="100" oninput="runSimulation()" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex:1;">
+              <div class="form-group">
                 <div class="range-header">
                   <label class="form-label" style="margin:0" for="awRangeB">A<sub>w</sub> (Formula B)</label>
                   <span class="range-val-badge" id="awValBadgeB" style="font-size:0.95rem;">0.74</span>
@@ -1498,6 +1604,7 @@
                 <input type="range" id="awRangeB" min="0.50" max="0.99" step="0.01" value="0.74"
                        oninput="document.getElementById('awValBadgeB').textContent = parseFloat(this.value).toFixed(2); runSimulation();" />
               </div>
+            </div>
             </div>
           </div>
 
@@ -1520,6 +1627,8 @@
             <div class="risk-sticker low" id="riskSticker">&check; Low Risk</div>
           </div>
         </div>
+
+        <div class="warn-box" id="safetyBanner"></div>
 
         <!-- Compare Delta Callout -->
         <div class="compare-delta-box" id="compareDeltaBox">
@@ -1597,6 +1706,14 @@
             <div class="factor-item-val" id="metricTemp">25&deg;C</div>
           </div>
         </div>
+
+        <div class="form-note" id="limitNote" style="margin: 0 20px 6px 20px;"></div>
+
+        <details class="advanced-box" style="margin: 6px 20px 14px 20px;">
+          <summary>Plan an accelerated test (ASLT)</summary>
+          <div class="aslt-lines" id="asltPlan"></div>
+          <div class="form-note">Durations are estimates from the same Ea/Q10 model. Confirm with your lab — and never hold low-acid food (pH &gt; 4.6) at high temperature without a scheduled process.</div>
+        </details>
 
         <!-- Output Action Bar (Certificate Button) -->
         <div class="output-action-bar">
@@ -1682,13 +1799,13 @@
             <div class="roi-metric-card">
               <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:#666;">Packaging Upgrade Cost</div>
               <div class="roi-metric-num" id="roiUpgradeCost">$2,880</div>
-              <div style="font-size:0.68rem; color:#444; margin-top:2px;">Across 24,000 units</div>
+              <div style="font-size:0.68rem; color:#444; margin-top:2px;" id="roiUnitsNote">Across 24,000 units</div>
             </div>
 
             <div class="roi-metric-card">
               <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:#666;">Spoilage Loss Prevented</div>
               <div class="roi-metric-num" id="roiSpoilagePrevented">$9,600</div>
-              <div style="font-size:0.68rem; color:#444; margin-top:2px;">-24% port write-off risk</div>
+              <div style="font-size:0.68rem; color:#444; margin-top:2px;" id="roiRiskNote">-24% port write-off risk</div>
             </div>
           </div>
 
@@ -1702,8 +1819,8 @@
                 233% ROI
               </div>
             </div>
-            <div style="font-size:0.72rem; margin-top:10px; color:#333; line-height:1.4;">
-              <strong>Engineering Takeaway:</strong> Upgrading from standard PET to hermetic multi-layer barrier pays for itself <strong>3.3x over</strong> by eliminating port rejection penalties.
+            <div style="font-size:0.72rem; margin-top:10px; color:#333; line-height:1.4;" id="roiTakeaway">
+              <strong>Engineering Takeaway:</strong>
             </div>
           </div>
         </div>
@@ -1717,14 +1834,14 @@
         DEVELOPED BY S. M. MAHMUD IQBAL
       </div>
       <div class="footer-right">
-        SHELLFSENSE &bull; Predictive Shelf Life Engine &bull; v2.4.1
+        SHELFSENSE &bull; Predictive Shelf Life Engine &bull; v3.0.0
       </div>
     </footer>
 
   </main>
 
   <!-- Official Certificate Modal -->
-  <div class="modal-backdrop" id="certModal">
+  <div class="modal-backdrop" id="certModal" role="dialog" aria-modal="true" aria-label="Export stability certificate">
     <div class="certificate-container" id="printableCert">
 
       <div class="cert-header">
@@ -1739,8 +1856,9 @@
             Issued under International Food Engineering Kinetic Standards (ASLT Protocols)
           </div>
         </div>
-        <div class="cert-serial" id="certSerial">
-          CERT-SS-2026-8849
+        <div>
+          <div class="cert-serial" id="certSerial">CERT-SS-2026-0000</div>
+          <div style="font-size:0.7rem; color:#555; text-align:right;" id="certIssueDate"></div>
         </div>
       </div>
 
@@ -1750,7 +1868,7 @@
           <div class="cert-data-val" id="certProdName">Mango Chutney</div>
         </div>
         <div class="cert-data-box">
-          <div class="cert-data-lbl">Predicted Safe Shelf Life</div>
+          <div class="cert-data-lbl" id="certDaysLabel">Predicted Shelf Life</div>
           <div class="cert-data-val" id="certDays">284 Days (9.4 Months)</div>
         </div>
         <div class="cert-data-box">
@@ -1762,6 +1880,8 @@
           <div class="cert-data-val" id="certMarket">Retort Pouch &bull; United States</div>
         </div>
       </div>
+
+      <div class="cert-watermark" id="certWatermark">Not export-cleared — reformulation advised</div>
 
       <!-- Microbial & Quality Criteria Table (Responsive Scroll on Mobile) -->
       <div class="cert-table-scroll">
@@ -1776,18 +1896,18 @@
           <tbody>
             <tr>
               <td><strong>Clostridium botulinum Outgrowth</strong></td>
-              <td>pH &le; 4.60 (Acidified food limit)</td>
-              <td><strong style="color:#0a5c36;">&check; PASS (Inhibited)</strong></td>
+              <td id="certBotThreshold">pH &le; 4.60 (Acidified food limit)</td>
+              <td><strong id="certBotStatus">&check; PASS (Inhibited)</strong></td>
             </tr>
             <tr>
               <td><strong>Staphylococcus aureus Enterotoxin</strong></td>
-              <td>Water Activity (Aw) &le; 0.85</td>
-              <td><strong style="color:#0a5c36;">&check; PASS (Suppressed)</strong></td>
+              <td id="certStaphThreshold">Water Activity (Aw) &le; 0.85</td>
+              <td><strong id="certStaphStatus">&check; PASS (Suppressed)</strong></td>
             </tr>
             <tr>
               <td><strong>Lipid / Color Maillard Rate</strong></td>
-              <td>Arrhenius Q10 = 2.0 at 25&deg;C</td>
-              <td><strong style="color:#0a5c36;">&check; VERIFIED (Stable)</strong></td>
+              <td id="certLipidThreshold">Arrhenius Q10 at storage temp</td>
+              <td><strong id="certLipidStatus">&check; VERIFIED (Stable)</strong></td>
             </tr>
           </tbody>
         </table>
@@ -1796,7 +1916,7 @@
       <!-- Footer Stamp & Signature Block -->
       <div class="cert-footer-stamp">
         <div class="stamp-box">
-          &#x25C6; BSTI / FDA EXPORT COMPLIANCE VERIFIED &#x25C6;
+          &#x25C6; SHELFSENSE SCREENING ESTIMATE &#x25C6;
         </div>
 
         <div class="signature-area">
@@ -1805,6 +1925,8 @@
           <div style="font-size:0.65rem; color:#777; margin-top:2px;">Digital Verification ID: SS-ENG-2026-BD</div>
         </div>
       </div>
+
+      <div class="cert-disclaimer">Screening estimate only — generated from the inputs and kinetic model shown above. It is not a laboratory ASLT result, a scheduled process, or a compliance guarantee for BSTI, FDA, EFSA or any other authority. Verify shelf life with accredited lab testing before export.</div>
 
       <!-- Print / Close Actions -->
       <div class="cert-actions">
@@ -1865,16 +1987,69 @@
       runSimulation();
     }
 
-    /* Food Engineering Kinetic Model */
-    function calculateDays(aw, pH, temp, pkg, mkt) {
-      const pkgBaseDays = {
-        glass: 540,
-        tin: 480,
-        retort: 380,
-        pet: 220,
-        map: 170
-      };
-      let days = pkgBaseDays[pkg] || 300;
+    /* ===== v3 Model Data =====
+       Packaging barrier values are typical published figures for the pack
+       format (film/body only — closures and seals vary). Verify against
+       your supplier's spec sheet before relying on them. */
+    const PKG = {
+      glass:  { base: 520, otr: 0.01, wvtr: 0.01, grade: 'Excellent' },
+      tin:    { base: 470, otr: 0.01, wvtr: 0.01, grade: 'Excellent' },
+      retort: { base: 390, otr: 0.1,  wvtr: 0.1,  grade: 'Excellent' },
+      pet:    { base: 300, otr: 75,   wvtr: 18,   grade: 'Low' },
+      map:    { base: 230, otr: 30,   wvtr: 8,    grade: 'Moderate' }
+    };
+
+    /* Spoilage modes with typical literature Ea ranges (kJ/mol), preset midpoints */
+    const MODES = {
+      auto:      { label: 'Balanced estimate',   ea: 55,  limit: 'overall quality' },
+      microbial: { label: 'Microbial growth',    ea: 85,  limit: 'microbial growth' },
+      oxidation: { label: 'Oxidation / rancidity', ea: 65, limit: 'oxidation' },
+      moisture:  { label: 'Moisture change',     ea: 35,  limit: 'moisture change' },
+      colour:    { label: 'Colour & flavour loss', ea: 105, limit: 'colour & flavour loss' }
+    };
+
+    const MARKET_NOTES = {
+      us:  'Screen: FDA 21 CFR 114 (acidified foods) — the key check is equilibrium pH ≤ 4.6.',
+      eu:  'Screen: EU Reg. 178/2002 general food law — safety + traceability; Aw/pH screening applied.',
+      gcc: 'Screen: GSO 150-1 — shelf-life dating rules for Gulf markets.',
+      sea: 'Screen: ASEAN food standards — general safety and labelling requirements.',
+      uk:  'Screen: UK FSA food safety and labelling rules.'
+    };
+    const MARKET_BUFFER = { eu: 0.85, us: 0.90, gcc: 0.92, sea: 0.95, uk: 0.88 };
+    const R_GAS = 8.314;
+
+    function q10FromEa(ea, atTempC) {
+      const T = atTempC + 273.15;
+      return Math.exp((ea * 1000 / R_GAS) * (10 / (T * (T + 10))));
+    }
+    function arrheniusFactor(ea, tempC, refC) {
+      return Math.exp((ea * 1000 / R_GAS) * ((1 / (tempC + 273.15)) - (1 / (refC + 273.15))));
+    }
+    function barrierFactor(pkgKey, modeKey) {
+      const pk = PKG[pkgKey]; if (!pk) return 1;
+      const otrI = pk.otr / 75, wvtrI = pk.wvtr / 18;
+      let idx;
+      if (modeKey === 'oxidation') idx = otrI;
+      else if (modeKey === 'moisture') idx = wvtrI;
+      else idx = Math.sqrt(otrI * wvtrI);
+      return 1 / (1 + 0.55 * Math.min(idx, 2));
+    }
+    function brixFactor(brix) {
+      // Soluble solids bind water / add osmotic stress — modest screening factor
+      return Math.min(1.18, Math.max(0.90, 1 + (brix - 30) * 0.003));
+    }
+    function getModeKey() { return document.getElementById('failMode').value || 'auto'; }
+    function getEa(modeKey) {
+      const custom = parseFloat(document.getElementById('eaCustom').value);
+      if (!isNaN(custom) && custom >= 10 && custom <= 250) return custom;
+      return (MODES[modeKey] || MODES.auto).ea;
+    }
+    function fmtPerm(v) { return v < 1 ? String(v) : String(Math.round(v)); }
+
+    /* Food Engineering Kinetic Model (v3) */
+    function calculateDays(aw, pH, temp, pkg, mkt, brix, modeKey, ea) {
+      const pk = PKG[pkg] || { base: 300 };
+      let days = pk.base * barrierFactor(pkg, modeKey);
 
       // Water Activity (Aw) exponential inhibition
       const awFactor = 1.0 - Math.pow((aw - 0.50) / 0.50, 1.85);
@@ -1886,14 +2061,14 @@
         : 1.00 - (pH - 4.6) * 0.16;
       days *= Math.max(0.3, phFactor);
 
-      // Arrhenius Q10 temperature acceleration
-      const q10 = 2.0;
-      const tempAccFactor = Math.pow(q10, -(temp - 25.0) / 10.0);
-      days *= tempAccFactor;
+      // Soluble solids (Brix)
+      days *= brixFactor(brix);
 
-      // Market regulatory compliance margin
-      const marketBuffer = { eu: 0.85, us: 0.90, gcc: 0.92, sea: 0.95, uk: 0.88 };
-      days *= (marketBuffer[mkt] || 0.90);
+      // True Arrhenius temperature shift (Ea-based), reference 25°C
+      days *= arrheniusFactor(ea, temp, 25.0);
+
+      // Market screening margin
+      days *= (MARKET_BUFFER[mkt] || 0.90);
 
       return Math.max(25, Math.round(days));
     }
@@ -1903,25 +2078,29 @@
       const awA   = parseFloat(document.getElementById('awRange').value);
       const tempA = parseFloat(document.getElementById('tempRange').value);
       const pHA   = parseFloat(document.getElementById('phVal').value) || 4.0;
+      const brixA = parseFloat(document.getElementById('brixVal').value) || 0;
       const pkgA  = document.getElementById('packagingType').value;
       const mkt   = document.getElementById('exportMarket').value;
+      const modeKey = getModeKey();
+      const ea = getEa(modeKey);
+      const q10 = q10FromEa(ea, 25);
 
-      const daysA = calculateDays(awA, pHA, tempA, pkgA, mkt);
+      // ASLT anchor mode: measured shelf life, temperature-shifted only
+      const anchorDays = parseFloat(document.getElementById('anchorDays').value);
+      const anchorTemp = parseFloat(document.getElementById('anchorTemp').value);
+      const anchorActive = !isNaN(anchorDays) && anchorDays > 0 && !isNaN(anchorTemp);
 
-      // Update Formula A Displays
-      let riskLabel = 'Low Risk';
+      const daysA = anchorActive
+        ? Math.max(25, Math.round(anchorDays * arrheniusFactor(ea, tempA, anchorTemp)))
+        : calculateDays(awA, pHA, tempA, pkgA, mkt, brixA, modeKey, ea);
+
+      // Risk label — pH > 4.6 can never read "Low Risk" on acidity alone
+      let riskLabel = '✓ Low Risk';
       let riskClass = 'low';
-
-      if (daysA > 180) {
-        riskLabel = '✓ Low Risk';
-        riskClass = 'low';
-      } else if (daysA > 90) {
-        riskLabel = '⚠ Moderate';
-        riskClass = 'medium';
-      } else {
-        riskLabel = '✕ High Risk';
-        riskClass = 'high';
-      }
+      if (daysA > 180) { riskLabel = '✓ Low Risk'; riskClass = 'low'; }
+      else if (daysA > 90) { riskLabel = '⚠ Moderate'; riskClass = 'medium'; }
+      else { riskLabel = '✕ High Risk'; riskClass = 'high'; }
+      if (pHA > 4.6 && riskClass === 'low') { riskLabel = '⚠ Moderate'; riskClass = 'medium'; }
 
       document.getElementById('daysDisplay').innerHTML = `${daysA}<span>DAYS</span>`;
       const sticker = document.getElementById('riskSticker');
@@ -1932,21 +2111,54 @@
       document.getElementById('metricPh').textContent   = pHA.toFixed(1);
       document.getElementById('metricTemp').textContent = tempA + '°C';
 
+      // Safety flags
+      const flags = [];
+      if (pHA > 4.6) flags.push('pH ' + pHA.toFixed(1) + ' is above 4.6 — C. botulinum spore outgrowth is no longer inhibited by acidity alone. This product needs a scheduled thermal process, not acidity, for safety.');
+      if (awA > 0.85) flags.push('Aw ' + awA.toFixed(2) + ' is above 0.85 — Staphylococcus aureus can grow and produce toxin in this range.');
+      const phW = document.getElementById('phWarning');
+      if (pHA > 4.6) { phW.textContent = '⚠ Above pH 4.6: acidity alone no longer inhibits C. botulinum. Treat the result as screening only.'; phW.classList.add('show'); }
+      else { phW.textContent = ''; phW.classList.remove('show'); }
+      const banner = document.getElementById('safetyBanner');
+      if (flags.length) { banner.innerHTML = flags.map(f => '⚠ ' + f).join('<br>'); banner.classList.add('show'); }
+      else { banner.innerHTML = ''; banner.classList.remove('show'); }
+
+      // Plain-language notes under fields
+      const pk = PKG[pkgA];
+      if (pk) document.getElementById('pkgNote').textContent =
+        `Barrier data (typical): OTR ${fmtPerm(pk.otr)} cc/m²·day · WVTR ${fmtPerm(pk.wvtr)} g/m²·day — ${pk.grade} barrier.`;
+      document.getElementById('tempNote').textContent =
+        `Heat sensitivity: every +10°C multiplies spoilage rate by ~${q10.toFixed(1)}× (Q10, from Ea ${ea} kJ/mol).`;
+      document.getElementById('marketNote').textContent =
+        (MARKET_NOTES[mkt] || '') + ' Screening aid only — not a compliance guarantee.';
+      document.getElementById('limitNote').textContent = anchorActive
+        ? 'Using your measured shelf life, shifted to the storage temperature above (ASLT anchor mode).'
+        : `Shelf life limited by: ${MODES[modeKey].limit}.`;
+
+      // ASLT planner (inside its collapsed panel)
+      const planTemps = [tempA + 10, tempA + 15, tempA + 20].map(t => Math.min(t, 65));
+      document.getElementById('asltPlan').innerHTML =
+        `Goal: confirm ~${daysA} days at ${tempA}°C.<br>` +
+        planTemps.map(T => {
+          const d = Math.max(1, Math.round(daysA / Math.pow(q10, (T - tempA) / 10)));
+          return `• Test at ${T}°C for ~${d} days — sample at 0 / ${Math.round(d / 3)} / ${Math.round(2 * d / 3)} / ${d} days`;
+        }).join('<br>');
+
       // Formula B Calculations (If Compare Mode Active)
       let daysB = daysA;
       if (isCompareMode) {
         const awB  = parseFloat(document.getElementById('awRangeB').value);
         const phB  = parseFloat(document.getElementById('phValB').value) || 3.8;
+        const brixB = parseFloat(document.getElementById('brixValB').value) || 0;
         const pkgB = document.getElementById('packagingTypeB').value;
 
-        daysB = calculateDays(awB, phB, tempA, pkgB, mkt);
+        daysB = calculateDays(awB, phB, tempA, pkgB, mkt, brixB, modeKey, ea);
 
         const diffDays = daysB - daysA;
-        const pctDiff = Math.round((diffDays / daysA) * 100);
+        const pctDiff = (diffDays / daysA) * 100;
         const sign = diffDays >= 0 ? '+' : '';
 
         document.getElementById('compareDeltaText').textContent =
-          `Formula B grants ${sign}${diffDays} Days (${sign}${pctDiff}%)`;
+          `Formula B grants ${sign}${diffDays} Days (${sign}${pctDiff.toFixed(1)}%)`;
         document.getElementById('compareDeltaPill').textContent =
           `${sign}${diffDays} DAYS`;
       }
@@ -2045,25 +2257,87 @@
       document.getElementById('roiSpoilagePrevented').textContent = '$' + Math.round(spoilageLossPrevented).toLocaleString();
       document.getElementById('roiNetSaved').textContent = (netSavings >= 0 ? '+$' : '-$') + Math.abs(Math.round(netSavings)).toLocaleString();
       document.getElementById('roiRatioBadge').textContent = roi + '% ROI';
+      document.getElementById('roiUnitsNote').textContent = 'Across ' + units.toLocaleString() + ' units';
+      const riskDiff = riskA - riskB;
+      document.getElementById('roiRiskNote').textContent = riskDiff > 0
+        ? '-' + riskDiff + '% port write-off risk'
+        : (riskDiff < 0 ? '+' + Math.abs(riskDiff) + '% port write-off risk (worse)' : 'No change in write-off risk');
+
+      const money = v => '$' + Math.round(v).toLocaleString();
+      const takeaway = document.getElementById('roiTakeaway');
+      if (upgradeCost <= 0 && spoilageLossPrevented > 0) {
+        takeaway.innerHTML = `<strong>Engineering Takeaway:</strong> The upgraded barrier costs no more per unit and prevents <strong>${money(spoilageLossPrevented)}</strong> of spoilage — it pays for itself immediately.`;
+      } else if (netSavings > 0) {
+        const ratio = (spoilageLossPrevented / upgradeCost).toFixed(1);
+        takeaway.innerHTML = `<strong>Engineering Takeaway:</strong> At these numbers the packaging upgrade pays for itself <strong>${ratio}x over</strong> — ${money(spoilageLossPrevented)} of spoilage prevented for ${money(upgradeCost)} of extra packaging.`;
+      } else if (netSavings < 0) {
+        takeaway.innerHTML = `<strong>Engineering Takeaway:</strong> At these numbers the upgrade does <strong>not</strong> pay for itself — it prevents ${money(spoilageLossPrevented)} of spoilage but costs ${money(upgradeCost)} extra (net <strong>-${Math.abs(Math.round(netSavings)).toLocaleString()}</strong>). A cheaper barrier, or a bigger spoilage gap, would be needed.`;
+      } else {
+        takeaway.innerHTML = `<strong>Engineering Takeaway:</strong> Break-even at these numbers — spoilage prevented exactly covers the extra packaging cost.`;
+      }
     }
 
     /* Certificate Modal Functions */
+    function certSerialFor(key) {
+      // Deterministic FNV-1a hash — same inputs + date always give the same serial
+      let hash = 0x811c9dc5;
+      for (let i = 0; i < key.length; i++) {
+        hash ^= key.charCodeAt(i);
+        hash = Math.imul(hash, 0x01000193) >>> 0;
+      }
+      return 'CERT-SS-2026-' + (1000 + (hash % 9000));
+    }
+
     function openCertificateModal() {
       const prod = document.getElementById('prodName').value || 'Packaged Export Item';
-      const aw = parseFloat(document.getElementById('awRange').value).toFixed(2);
-      const pH = parseFloat(document.getElementById('phVal').value).toFixed(1);
+      const aw = parseFloat(document.getElementById('awRange').value);
+      const pH = parseFloat(document.getElementById('phVal').value) || 4.0;
+      const brix = parseFloat(document.getElementById('brixVal').value) || 0;
+      const temp = parseFloat(document.getElementById('tempRange').value);
       const days = document.getElementById('daysDisplay').textContent.replace('DAYS', '').trim();
       const pkgText = document.getElementById('packagingType').selectedOptions[0].text;
       const mktText = document.getElementById('exportMarket').selectedOptions[0].text;
+      const modeKey = getModeKey();
+      const ea = getEa(modeKey);
+      const q10 = q10FromEa(ea, 25);
 
       document.getElementById('certProdName').textContent = prod;
       document.getElementById('certDays').textContent = `${days} Days (~${(days/30).toFixed(1)} Months)`;
-      document.getElementById('certChem').textContent = `Aw ${aw} • pH ${pH}`;
+      document.getElementById('certChem').textContent = `Aw ${aw.toFixed(2)} • pH ${pH.toFixed(1)} • ${brix}°Brix`;
       document.getElementById('certMarket').textContent = `${pkgText.split('(')[0]} • ${mktText.split('(')[0]}`;
 
-      // Random serial
-      const randNum = Math.floor(1000 + Math.random() * 9000);
-      document.getElementById('certSerial').textContent = `CERT-SS-2026-${randNum}`;
+      // Hazards are evaluated from the actual inputs — never hard-coded
+      const passCol = '#0a5c36', failCol = '#b00020', warnCol = '#8a5a00';
+      const botPass = pH <= 4.6;
+      const botEl = document.getElementById('certBotStatus');
+      document.getElementById('certBotThreshold').textContent = `Your pH ${pH.toFixed(1)} vs limit ≤ 4.60 (Acidified food limit)`;
+      botEl.textContent = botPass ? '✓ PASS (Inhibited)' : '✕ FAIL (Not inhibited — scheduled process required)';
+      botEl.style.color = botPass ? passCol : failCol;
+
+      const staphPass = aw <= 0.85;
+      const staphEl = document.getElementById('certStaphStatus');
+      document.getElementById('certStaphThreshold').textContent = `Your Aw ${aw.toFixed(2)} vs limit ≤ 0.85`;
+      staphEl.textContent = staphPass ? '✓ PASS (Suppressed)' : '✕ FAIL (Growth possible)';
+      staphEl.style.color = staphPass ? passCol : failCol;
+
+      const lipidEl = document.getElementById('certLipidStatus');
+      document.getElementById('certLipidThreshold').textContent =
+        `${MODES[modeKey].label}: Ea ${ea} kJ/mol · Q10 ≈ ${q10.toFixed(2)} · storage ${temp}°C`;
+      const lipidWarn = temp > 35;
+      lipidEl.textContent = lipidWarn ? '⚠ CHECK (High-temp acceleration)' : '✓ VERIFIED (Within model range)';
+      lipidEl.style.color = lipidWarn ? warnCol : passCol;
+
+      const cleared = botPass && staphPass;
+      document.getElementById('certWatermark').classList.toggle('show', !cleared);
+      document.getElementById('certDaysLabel').textContent =
+        cleared ? 'Predicted Shelf Life' : 'Predicted Shelf Life — NOT EXPORT-CLEARED';
+
+      const today = new Date();
+      const iso = today.toISOString().slice(0, 10);
+      document.getElementById('certSerial').textContent =
+        certSerialFor([prod, aw, pH, brix, temp, pkgText, mktText, modeKey, ea, days, iso].join('|'));
+      document.getElementById('certIssueDate').textContent =
+        'Issued: ' + today.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
       document.getElementById('certModal').classList.add('open');
     }
@@ -2093,8 +2367,17 @@
         document.getElementById('tempRange').value = 28;
         document.getElementById('tempValBadge').textContent = '28°C';
       }
+      document.getElementById('anchorDays').value = '';
       runSimulation();
     }
+
+    // Modal: Escape key and backdrop click close it
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeCertificateModal();
+    });
+    document.getElementById('certModal').addEventListener('click', function (e) {
+      if (e.target === this) closeCertificateModal();
+    });
 
     // Initial calculation on load
     runSimulation();
