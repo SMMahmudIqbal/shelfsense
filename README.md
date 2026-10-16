@@ -4,6 +4,8 @@
 > *Food Engineering & Preservation Research | Neo-Brutalist Web Engine*
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-shelfsense--lemon.vercel.app-ffe17c?style=for-the-badge&logo=vercel&logoColor=black)](https://shelfsense-lemon.vercel.app)
+
+![ShelfSense demo](demo.gif)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-171e19?style=for-the-badge&logo=github)](https://github.com/SMMahmudIqbal/shelfsense)
 [![License](https://img.shields.io/badge/License-MIT-b7c6c2?style=for-the-badge)](LICENSE)
 
